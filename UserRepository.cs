@@ -1,0 +1,108 @@
+using Npgsql;
+using System;
+using System.Data;
+
+internal class UserRepository
+{
+    private readonly string connectionString;
+
+    public UserRepository(string connectionString)
+    {
+        this.connectionString = connectionString;
+    }
+
+    internal void Add(User user)
+    {
+        using IDbConnection connection = new NpgsqlConnection(connectionString);
+        using IDbCommand command = connection.CreateCommand();
+        connection.Open();
+
+        command.CommandText = "INSERT INTO users (username, password) " +
+            "VALUES (@username, @password) RETURNING id";
+        AddParameterWithValue(command, "username", DbType.String, user.Username ?? throw new ArgumentNullException(nameof(user.Username)));
+        AddParameterWithValue(command, "password", DbType.String, user.Password ?? throw new ArgumentNullException(nameof(user.Password)));
+        user.Id = (int)(command.ExecuteScalar() ?? 0);
+    }
+    internal IEnumerable<User> GetAll()
+    {
+        List<User> result = [];
+
+        using IDbConnection connection = new NpgsqlConnection(connectionString);
+        using IDbCommand command = connection.CreateCommand();
+        connection.Open();
+        command.CommandText = @"SELECT id, username, password FROM users";
+
+        using(IDataReader reader = command.ExecuteReader())
+        while(reader.Read())
+        {
+            result.Add(new User() {
+                Id = reader.GetInt32(0),
+                Username = reader.GetString(1),
+                Password = reader.GetString(2)
+            });
+        }
+        return result;
+    }
+
+    internal User? GetById(int? id)
+    {
+        if(id == null)
+            throw new ArgumentException("Id must not be null");
+
+        using IDbConnection connection = new NpgsqlConnection(connectionString);
+        using IDbCommand command = connection.CreateCommand();
+        connection.Open();
+        command.CommandText = @"SELECT id, username, password FROM users WHERE id=@id";
+        AddParameterWithValue(command, "id", DbType.Int32, id);
+
+        using IDataReader reader = command.ExecuteReader();
+        if(reader.Read())
+        {
+            return new User()
+            {
+                Id = reader.GetInt32(0),
+                Username = reader.GetString(1),
+                Password = reader.GetString(2)
+            };
+        }
+        return null;
+    }
+
+    internal void Update(User user)
+    {
+        if(user.Id == null)
+            throw new ArgumentException("Id must not be null");
+
+        using IDbConnection connection = new NpgsqlConnection(connectionString);
+        using IDbCommand command = connection.CreateCommand();
+        connection.Open();
+        command.CommandText = "UPDATE users SET name=@name, password=@password WHERE id=@id";
+        AddParameterWithValue(command, "id", DbType.Int32, user.Id);
+        AddParameterWithValue(command, "username", DbType.String, user.Username ?? throw new ArgumentNullException(nameof(user.Username)));
+        AddParameterWithValue(command, "password", DbType.String, user.Password ?? throw new ArgumentNullException(nameof(user.Password)));
+        command.ExecuteNonQuery();
+    }
+
+    internal void Delete(User user)
+    {
+        if(user.Id == null)
+            throw new ArgumentException("Id must not be null");
+
+        using IDbConnection connection = new NpgsqlConnection(connectionString);
+        using IDbCommand command = connection.CreateCommand();
+        connection.Open();
+        command.CommandText = "DELETE FROM users WHERE id=@id";
+        AddParameterWithValue(command, "id", DbType.Int32, user.Id);
+        command.ExecuteNonQuery();
+    }
+
+
+    public static void AddParameterWithValue(IDbCommand command, string parameterName, DbType type, object value)
+    {
+        var parameter = command.CreateParameter();
+        parameter.DbType = type;
+        parameter.ParameterName = parameterName;
+        parameter.Value = value ?? DBNull.Value;
+        command.Parameters.Add(parameter);
+    }
+}
