@@ -34,6 +34,7 @@ public class Server
             line = reader.ReadLine();
             if(line == null) return;
             var httpParts = line.Split(' ');
+            if(httpParts.Length < 3) { Console.WriteLine("Something wrong"); return; }
             var method = httpParts[0];
             var path = httpParts[1];
             var version = httpParts[2];
