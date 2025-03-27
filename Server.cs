@@ -71,6 +71,7 @@ public class Server
                     requestBody.Append(chars, 0, bytesRead);
                 }
             }
+            
             string responseBody = "Initial responseBody";
 
             if(method == "POST" && path == "/users")
@@ -78,17 +79,7 @@ public class Server
                 try
                 {
                     string body = requestBody.ToString();
-                    User? user = JsonSerializer.Deserialize<User>(body);
-                    if(user == null)
-                    {
-                        responseBody = "User data is missing or invalid";
-                        writer.WriteLine("HTTP/1.0 400 Bad Request");
-                        writer.WriteLine("Content-Type: text/plain");
-                        writer.WriteLine($"Content-Length: {responseBody.Length}");
-                        writer.WriteLine();
-                        writer.WriteLine(responseBody);
-                        return;
-                    }
+                    User user = JsonSerializer.Deserialize<User>(body);
                     userRepository.Add(user);
                     writer.WriteLine("HTTP/1.0 201 Created");
                     writer.WriteLine("Content-Type: text/plain");
@@ -96,14 +87,19 @@ public class Server
                     writer.WriteLine();
                     writer.WriteLine("User registered");
                 }
-                /*catch(Exception ex)
-                {
-                    throw new Exception(ex.Message);
-                }*/
                 catch(JsonException)
                 {
                     responseBody = "Invalid JSON format";
                     writer.WriteLine("HTTP/1.0 400 Bad Request");
+                    writer.WriteLine("Content-Type: text/plain");
+                    writer.WriteLine($"Content-Length: {responseBody.Length}");
+                    writer.WriteLine();
+                    writer.WriteLine(responseBody);
+                }
+                catch(Exception ex)
+                {
+                    responseBody = $"Unexpected error: {ex.Message}";
+                    writer.WriteLine("HTTP/1.0 500 Internal Server Error");
                     writer.WriteLine("Content-Type: text/plain");
                     writer.WriteLine($"Content-Length: {responseBody.Length}");
                     writer.WriteLine();
