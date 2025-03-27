@@ -6,12 +6,13 @@ using Npgsql;
 
 public class Server
 {
+    private readonly string connectionstring = "Host=localhost;Username=postgres;Password=postgres;Database=postgres";
     private readonly TcpListener tcpListener;
-    private UserRepository userRepository = new UserRepository
-    ("Host=localhost;Username=postgres;Password=postgres;Database=postgres");
+    private readonly UserRepository userRepository;
     public Server(int port)
     {
         tcpListener = new TcpListener(IPAddress.Any, port);
+        userRepository = new UserRepository(connectionstring);
     }
 
     public void Start()
@@ -73,7 +74,7 @@ public class Server
             }
             //Console.WriteLine($"Body: {requestBody.ToString()}");
 
-            string responseBody = "<html><body>Hello Siuuu!</body></html>";
+            string responseBody = "<html><body>Initial responseBody</body></html>";
 
             if(method == "POST" && path == "/users")
             {
@@ -104,9 +105,8 @@ public class Server
                     }
                     else 
                     {
-                        /*string query = @"INSERT INTO users (id, username, password) VALUES (1, 'Susi', 'secure123')";*/
                         userRepository.Add(user);
-                        responseBody = $"User registered:\nUsername: {user.Username}\nPassword: {user.Password}";
+                        responseBody = $"User registered successfully";
                         writer.WriteLine("HTTP/1.0 200 OK");
                         writer.WriteLine("Content-Type: text/plain");
                         writer.WriteLine($"Content-Length: {responseBody.Length}");
@@ -118,26 +118,18 @@ public class Server
             else if(method == "GET" && path == "/users")
             {
                 IEnumerable<User> users = userRepository.GetAll();
-                StringBuilder responseBuilder = new StringBuilder();
+                /*StringBuilder responseBuilder = new StringBuilder();
                 foreach(var user in users)
                 {
                     responseBuilder.AppendLine($"{user.Username}, {user.Password}");
-                }
-                responseBody = responseBuilder.ToString();
+                }*/
+                //responseBody = responseBuilder.ToString();
+
                 writer.WriteLine("HTTP/1.0 200 OK");
                 writer.WriteLine("Content-Type: text/plain");
                 writer.WriteLine($"Content-Length: {responseBody.Length}");
                 writer.WriteLine();
-                writer.WriteLine(responseBody);
-                /*if(users.Count == 0)
-                {
-                    responseBody = $"No user available";
-                    writer.WriteLine("HTTP/1.0 200 OK");
-                    writer.WriteLine("Content-Type: text/plain");
-                    writer.WriteLine($"Content-Length: {responseBody.Length}");
-                    writer.WriteLine();
-                    writer.WriteLine(responseBody);                    
-                }*/
+                writer.WriteLine(users);
             }
             else
             {
