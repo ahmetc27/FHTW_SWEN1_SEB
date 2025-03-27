@@ -51,7 +51,6 @@ public class Server
                 var headerParts = line.Split(':');
                 var headerName = headerParts[0];
                 var headerValue = headerParts[1].Trim();
-                //Console.WriteLine($"Header: {headerName}={headerValue}");
                 if(headerName == "Content-Length")
                 {
                     content_length = int.Parse(headerValue);
@@ -72,30 +71,17 @@ public class Server
                     requestBody.Append(chars, 0, bytesRead);
                 }
             }
-            //Console.WriteLine($"Body: {requestBody.ToString()}");
-
-            string responseBody = "<html><body>Initial responseBody</body></html>";
+            string responseBody = "Initial responseBody";
 
             if(method == "POST" && path == "/users")
             {
-                if(requestBody.Length <= 0)
-                {
-                    responseBody = "request body is empty";
-                    Console.WriteLine(responseBody);
-
-                    writer.WriteLine("HTTP/1.0 400 Bad Request");
-                    writer.WriteLine("Content-Type: text/plain");
-                    writer.WriteLine($"Content-Length: {responseBody.Length}");
-                    writer.WriteLine();
-                    writer.WriteLine(responseBody);
-                }
-                else
+                try
                 {
                     string body = requestBody.ToString();
                     User? user = JsonSerializer.Deserialize<User>(body);
                     if(user == null)
                     {
-                        responseBody = "Invalid user data";
+                        responseBody = "User data is missing or invalid";
                         writer.WriteLine("HTTP/1.0 400 Bad Request");
                         writer.WriteLine("Content-Type: text/plain");
                         writer.WriteLine($"Content-Length: {responseBody.Length}");
@@ -103,27 +89,30 @@ public class Server
                         writer.WriteLine(responseBody);
                         return;
                     }
-                    else 
-                    {
-                        userRepository.Add(user);
-                        responseBody = $"User registered successfully";
-                        writer.WriteLine("HTTP/1.0 200 OK");
-                        writer.WriteLine("Content-Type: text/plain");
-                        writer.WriteLine($"Content-Length: {responseBody.Length}");
-                        writer.WriteLine();
-                        writer.WriteLine(responseBody);
-                    }
+                    userRepository.Add(user);
+                    writer.WriteLine("HTTP/1.0 201 Created");
+                    writer.WriteLine("Content-Type: text/plain");
+                    writer.WriteLine($"Content-Length: {responseBody.Length}");
+                    writer.WriteLine();
+                    writer.WriteLine("User registered");
+                }
+                /*catch(Exception ex)
+                {
+                    throw new Exception(ex.Message);
+                }*/
+                catch(JsonException)
+                {
+                    responseBody = "Invalid JSON format";
+                    writer.WriteLine("HTTP/1.0 400 Bad Request");
+                    writer.WriteLine("Content-Type: text/plain");
+                    writer.WriteLine($"Content-Length: {responseBody.Length}");
+                    writer.WriteLine();
+                    writer.WriteLine(responseBody);
                 }
             }
             else if(method == "GET" && path == "/users")
             {
                 IEnumerable<User> users = userRepository.GetAll();
-                /*StringBuilder responseBuilder = new StringBuilder();
-                foreach(var user in users)
-                {
-                    responseBuilder.AppendLine($"{user.Username}, {user.Password}");
-                }*/
-                //responseBody = responseBuilder.ToString();
                 responseBody = JsonSerializer.Serialize(users);
                 writer.WriteLine("HTTP/1.0 200 OK");
                 writer.WriteLine("Content-Type: text/plain");
