@@ -124,12 +124,12 @@ public class Server
                     responseBuilder.AppendLine($"{user.Username}, {user.Password}");
                 }*/
                 //responseBody = responseBuilder.ToString();
-
+                responseBody = JsonSerializer.Serialize(users);
                 writer.WriteLine("HTTP/1.0 200 OK");
                 writer.WriteLine("Content-Type: text/plain");
                 writer.WriteLine($"Content-Length: {responseBody.Length}");
                 writer.WriteLine();
-                writer.Write(JsonSerializer.Serialize(users));
+                writer.Write(responseBody);
             }
             else
             {
