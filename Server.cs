@@ -129,7 +129,7 @@ public class Server
                 writer.WriteLine("Content-Type: text/plain");
                 writer.WriteLine($"Content-Length: {responseBody.Length}");
                 writer.WriteLine();
-                writer.WriteLine(users);
+                writer.Write(JsonSerializer.Serialize(users));
             }
             else
             {
