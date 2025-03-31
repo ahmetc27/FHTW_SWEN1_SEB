@@ -96,6 +96,15 @@ public class UserRepository
         command.ExecuteNonQuery();
     }
 
+    public void DeleteAll()
+    {
+        using IDbConnection connection = new NpgsqlConnection(connectionString);
+        using IDbCommand command = connection.CreateCommand();
+        connection.Open();
+        command.CommandText = "DELETE FROM users";
+        command.ExecuteNonQuery();
+    }
+
 
     public static void AddParameterWithValue(IDbCommand command, string parameterName, DbType type, object value)
     {

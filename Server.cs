@@ -86,7 +86,7 @@ public class Server
                     }
                     userRepository.Add(user);
                     responseBody = "User registered";
-                    writer.WriteLine("HTTP/1.0 201 Created");
+                    writer.WriteLine("HTTP/1.1 201 Created");
                     writer.WriteLine("Content-Type: text/plain");
                     writer.WriteLine($"Content-Length: {responseBody.Length}");
                     writer.WriteLine();
@@ -95,7 +95,7 @@ public class Server
                 catch(JsonException)
                 {
                     responseBody = "Invalid JSON format";
-                    writer.WriteLine("HTTP/1.0 400 Bad Request");
+                    writer.WriteLine("HTTP/1.1 400 Bad Request");
                     writer.WriteLine("Content-Type: text/plain");
                     writer.WriteLine($"Content-Length: {responseBody.Length}");
                     writer.WriteLine();
@@ -104,7 +104,7 @@ public class Server
                 catch(Exception ex)
                 {
                     responseBody = $"Unexpected error: {ex.Message}";
-                    writer.WriteLine("HTTP/1.0 500 Internal Server Error");
+                    writer.WriteLine("HTTP/1.1 500 Internal Server Error");
                     writer.WriteLine("Content-Type: text/plain");
                     writer.WriteLine($"Content-Length: {responseBody.Length}");
                     writer.WriteLine();
@@ -115,15 +115,60 @@ public class Server
             {
                 IEnumerable<User> users = userRepository.GetAll();
                 responseBody = JsonSerializer.Serialize(users);
-                writer.WriteLine("HTTP/1.0 200 OK");
+                writer.WriteLine("HTTP/1.1 200 OK");
                 writer.WriteLine("Content-Type: text/plain");
                 writer.WriteLine($"Content-Length: {responseBody.Length}");
                 writer.WriteLine();
                 writer.Write(responseBody);
             }
+            else if(method == "DELETE" && path == "/users")
+            {
+                userRepository.DeleteAll();
+                responseBody = "All users deleted successfully";
+                writer.WriteLine("HTTP/1.1 200 OK");
+                writer.WriteLine("Content-Type: text/plain");
+                writer.WriteLine($"Content-Length: {responseBody.Length}");
+                writer.WriteLine();
+                writer.Write(responseBody);             
+            }
+            else if(method == "DELETE" && path.StartsWith("/users/"))
+            {
+                try
+                {
+                    string idStr = path.Substring("/users/".Length);
+                    int id = int.Parse(idStr);
+                    User user = new User { Id = id };
+                    userRepository.Delete(user);
+                    responseBody = "User deleted";
+                    writer.WriteLine("HTTP/1.1 200 OK");
+                    writer.WriteLine("Content-Type: text/plain");
+                    writer.WriteLine($"Content-Length: {responseBody.Length}");
+                    writer.WriteLine();
+                    writer.WriteLine(responseBody);
+                }
+                catch(FormatException)
+                {
+                    responseBody = "Invalid ID format";
+                    writer.WriteLine("HTTP/1.1 400 Bad Request");
+                    writer.WriteLine("Content-Type: text/plain");
+                    writer.WriteLine($"Content-Length: {responseBody.Length}");
+                    writer.WriteLine();
+                    writer.WriteLine(responseBody);
+                }
+                catch(Exception ex)
+                {
+                    responseBody = $"Unexpected error: {ex.Message}";
+                    writer.WriteLine("HTTP/1.1 500 Internal Server Error");
+                    writer.WriteLine("Content-Type: text/plain");
+                    writer.WriteLine($"Content-Length: {responseBody.Length}");
+                    writer.WriteLine();
+                    writer.WriteLine(responseBody);
+                }
+            }
             else
             {
-                writer.WriteLine("HTTP/1.0 200 OK");
+                responseBody = "Endpoint not found";
+                writer.WriteLine("HTTP/1.1 404 Not Found");
                 writer.WriteLine("Content-Type: text/html");
                 writer.WriteLine($"Content-Length: {responseBody.Length}");
                 writer.WriteLine();
