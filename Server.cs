@@ -79,13 +79,18 @@ public class Server
                 try
                 {
                     string body = requestBody.ToString();
-                    User user = JsonSerializer.Deserialize<User>(body);
+                    User? user = JsonSerializer.Deserialize<User>(body);
+                    if(user == null)
+                    {
+                        throw new JsonException("Deserialized user is null");
+                    }
                     userRepository.Add(user);
+                    responseBody = "User registered";
                     writer.WriteLine("HTTP/1.0 201 Created");
                     writer.WriteLine("Content-Type: text/plain");
                     writer.WriteLine($"Content-Length: {responseBody.Length}");
                     writer.WriteLine();
-                    writer.WriteLine("User registered");
+                    writer.Write(responseBody);
                 }
                 catch(JsonException)
                 {
