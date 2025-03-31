@@ -2,7 +2,7 @@ using Npgsql;
 using System;
 using System.Data;
 
-internal class UserRepository
+public class UserRepository
 {
     private readonly string connectionString;
 
@@ -11,7 +11,7 @@ internal class UserRepository
         this.connectionString = connectionString;
     }
 
-    internal void Add(User user)
+    public void Add(User user)
     {
         using IDbConnection connection = new NpgsqlConnection(connectionString);
         using IDbCommand command = connection.CreateCommand();
@@ -23,7 +23,7 @@ internal class UserRepository
         AddParameterWithValue(command, "password", DbType.String, user.Password ?? throw new ArgumentNullException(nameof(user.Password)));
         user.Id = (int)(command.ExecuteScalar() ?? 0);
     }
-    internal IEnumerable<User> GetAll()
+    public IEnumerable<User> GetAll()
     {
         List<User> result = [];
 
@@ -44,7 +44,7 @@ internal class UserRepository
         return result;
     }
 
-    internal User? GetById(int? id)
+    public User? GetById(int? id)
     {
         if(id == null)
             throw new ArgumentException("Id must not be null");
@@ -68,7 +68,7 @@ internal class UserRepository
         return null;
     }
 
-    internal void Update(User user)
+    public void Update(User user)
     {
         if(user.Id == null)
             throw new ArgumentException("Id must not be null");
@@ -83,7 +83,7 @@ internal class UserRepository
         command.ExecuteNonQuery();
     }
 
-    internal void Delete(User user)
+    public void Delete(User user)
     {
         if(user.Id == null)
             throw new ArgumentException("Id must not be null");
