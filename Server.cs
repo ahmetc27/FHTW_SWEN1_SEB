@@ -82,7 +82,11 @@ public class Server
                     User? user = JsonSerializer.Deserialize<User>(body);
                     if(user == null)
                     {
-                        throw new JsonException("Deserialized user is null");
+                        throw new JsonException();
+                    }
+                    if(string.IsNullOrEmpty(user.Username) || userRepository.ExistsByUsername(user.Username))
+                    {
+                        throw new InvalidOperationException();
                     }
                     userRepository.Add(user);
                     responseBody = "User registered";
@@ -96,6 +100,16 @@ public class Server
                 {
                     responseBody = "Invalid JSON format";
                     writer.WriteLine("HTTP/1.1 400 Bad Request");
+                    writer.WriteLine("Content-Type: text/plain");
+                    writer.WriteLine($"Content-Length: {responseBody.Length}");
+                    writer.WriteLine();
+                    writer.WriteLine(responseBody);
+                }
+                catch(InvalidOperationException)
+                {
+                    responseBody = "Username empty or already exists";
+                    //responseBody = ex.Message;
+                    writer.WriteLine("HTTP/1.1 409 Conflict");
                     writer.WriteLine("Content-Type: text/plain");
                     writer.WriteLine($"Content-Length: {responseBody.Length}");
                     writer.WriteLine();
@@ -169,7 +183,7 @@ public class Server
             {
                 responseBody = "Endpoint not found";
                 writer.WriteLine("HTTP/1.1 404 Not Found");
-                writer.WriteLine("Content-Type: text/html");
+                writer.WriteLine("Content-Type: text/plain");
                 writer.WriteLine($"Content-Length: {responseBody.Length}");
                 writer.WriteLine();
                 writer.WriteLine(responseBody);

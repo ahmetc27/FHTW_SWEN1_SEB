@@ -105,6 +105,19 @@ public class UserRepository
         command.ExecuteNonQuery();
     }
 
+    public bool ExistsByUsername(string username)
+    {
+        using IDbConnection connection = new NpgsqlConnection(connectionString);
+        using IDbCommand command = connection.CreateCommand();
+        connection.Open();
+        command.CommandText = "SELECT COUNT(*) FROM users WHERE username = @username";
+        AddParameterWithValue(command, "username", DbType.String, username);
+
+        var result = command.ExecuteScalar();
+        int count = Convert.ToInt32(result);
+        return count > 0;
+    }
+
 
     public static void AddParameterWithValue(IDbCommand command, string parameterName, DbType type, object value)
     {
