@@ -119,6 +119,40 @@ public class UserRepository
     }
 
 
+    public bool CheckCredentials(string username, string password)
+    {
+        using IDbConnection connection = new NpgsqlConnection(connectionString);
+        using IDbCommand command = connection.CreateCommand();
+        command.CommandText = "SELECT COUNT(*) FROM users WHERE username = @username AND password = @password";
+        AddParameterWithValue(command, "username", DbType.String, username);
+        AddParameterWithValue(command, "password", DbType.String, password);
+
+        connection.Open();
+        var result = command.ExecuteScalar();
+        int count = Convert.ToInt32(result);
+        return count == 1;
+    }
+
+    public User? GetByUsername(string username)
+    {
+        using IDbConnection connection = new NpgsqlConnection(connectionString);
+        using IDbCommand command = connection.CreateCommand();
+        connection.Open();
+        command.CommandText = @"SELECT id, username, password FROM users WHERE username=@username";
+        AddParameterWithValue(command, "username", DbType.String, username);
+
+        using IDataReader reader = command.ExecuteReader();
+        if(reader.Read())
+        {
+            return new User()
+            {
+                Id = reader.GetInt32(0),
+                Username = reader.GetString(1),
+                Password = reader.GetString(2)
+            };
+        }
+        return null;
+    }
     public static void AddParameterWithValue(IDbCommand command, string parameterName, DbType type, object value)
     {
         var parameter = command.CreateParameter();

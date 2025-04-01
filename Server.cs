@@ -51,9 +51,11 @@ public class Server
                 var headerParts = line.Split(':');
                 var headerName = headerParts[0];
                 var headerValue = headerParts[1].Trim();
+                //Console.WriteLine($"Header: {headerName}={headerValue}");
                 if(headerName == "Content-Length")
                 {
                     content_length = int.Parse(headerValue);
+                    Console.WriteLine($"Header: Content-Length={headerValue}");
                 }
             }
 
@@ -70,6 +72,7 @@ public class Server
                     if(bytesRead == 0) { break; } // no more data available
                     requestBody.Append(chars, 0, bytesRead);
                 }
+                Console.WriteLine($"Body: {requestBody.ToString()}");
             }
             
             string responseBody = "Initial responseBody";
@@ -82,33 +85,34 @@ public class Server
                     User? user = JsonSerializer.Deserialize<User>(body);
                     if(user == null)
                     {
-                        throw new JsonException();
+                        throw new JsonException("Invalid JSON format");
                     }
-                    if(string.IsNullOrEmpty(user.Username) || userRepository.ExistsByUsername(user.Username))
-                    {
-                        throw new InvalidOperationException();
-                    }
+                    if(string.IsNullOrEmpty(user.Username))
+                        throw new InvalidOperationException("Username is empty.");
+
+                    if(userRepository.ExistsByUsername(user.Username))
+                        throw new InvalidOperationException("Username already exists.");
+
                     userRepository.Add(user);
-                    responseBody = "User registered";
+                    responseBody = $"User {user.Username} registered successfully";
                     writer.WriteLine("HTTP/1.1 201 Created");
                     writer.WriteLine("Content-Type: text/plain");
                     writer.WriteLine($"Content-Length: {responseBody.Length}");
                     writer.WriteLine();
                     writer.Write(responseBody);
                 }
-                catch(JsonException)
+                catch(JsonException ex)
                 {
-                    responseBody = "Invalid JSON format";
+                    responseBody = ex.Message;
                     writer.WriteLine("HTTP/1.1 400 Bad Request");
                     writer.WriteLine("Content-Type: text/plain");
                     writer.WriteLine($"Content-Length: {responseBody.Length}");
                     writer.WriteLine();
                     writer.WriteLine(responseBody);
                 }
-                catch(InvalidOperationException)
+                catch(InvalidOperationException ex)
                 {
-                    responseBody = "Username empty or already exists";
-                    //responseBody = ex.Message;
+                    responseBody = ex.Message;
                     writer.WriteLine("HTTP/1.1 409 Conflict");
                     writer.WriteLine("Content-Type: text/plain");
                     writer.WriteLine($"Content-Length: {responseBody.Length}");
@@ -134,6 +138,42 @@ public class Server
                 writer.WriteLine($"Content-Length: {responseBody.Length}");
                 writer.WriteLine();
                 writer.Write(responseBody);
+            }
+            else if(method == "GET" && path.StartsWith("/users/"))
+            {
+                try
+                {
+                    string name = path.Substring("/users/".Length);
+                    User? user = userRepository.GetByUsername(name);
+                    
+                    if(user == null)
+                    {
+                        responseBody = "User not found";
+                        writer.WriteLine("HTTP/1.1 404 Not Found");
+                        writer.WriteLine("Content-Type: text/plain");
+                    }
+                    else
+                    {
+                        responseBody = JsonSerializer.Serialize(user);
+                        writer.WriteLine("HTTP/1.1 200 OK");
+                        writer.WriteLine("Content-Type: application/json");
+                    }
+
+
+                    writer.WriteLine($"Content-Length: {responseBody.Length}");
+                    writer.WriteLine();
+                    writer.WriteLine(responseBody);
+
+                }
+                catch(Exception ex)
+                {
+                    responseBody = $"Unexpected error: {ex.Message}";
+                    writer.WriteLine("HTTP/1.1 500 Internal Server Error");
+                    writer.WriteLine("Content-Type: text/plain");
+                    writer.WriteLine($"Content-Length: {responseBody.Length}");
+                    writer.WriteLine();
+                    writer.WriteLine(responseBody);
+                }
             }
             else if(method == "DELETE" && path == "/users")
             {
@@ -178,6 +218,65 @@ public class Server
                     writer.WriteLine();
                     writer.WriteLine(responseBody);
                 }
+            }
+            else if(method == "POST" && path == "/sessions")
+            {
+                try
+                {
+                    string body = requestBody.ToString();
+                    User? user = JsonSerializer.Deserialize<User>(body);
+                    if(user == null)
+                    {
+                        throw new JsonException("Invalid JSON format");
+                    }
+
+                    if(string.IsNullOrEmpty(user.Username))
+                        throw new InvalidOperationException("Username is empty.");
+
+                    //if(!userRepository.ExistsByUsername(user.Username))
+                        //throw new InvalidOperationException("Username does not exist.");
+
+                    //if(!userRepository.CheckCredentials(user.Username, user.Password))
+                        //throw new InvalidOperationException("Invalid username or password.");
+
+                    if(string.IsNullOrEmpty(user.Password) || !userRepository.CheckCredentials(user.Username, user.Password))
+                    throw new InvalidOperationException("Invalid username or password.");
+
+                    user.Token = $"{user.Username}-sebToken";
+                    responseBody = $"User {user.Username} token: {user.Token}";
+                    writer.WriteLine("HTTP/1.1 201 Created");
+                    writer.WriteLine("Content-Type: text/plain");
+                    writer.WriteLine($"Content-Length: {responseBody.Length}");
+                    writer.WriteLine();
+                    writer.Write(responseBody);
+                }
+                catch(JsonException ex)
+                {
+                    responseBody = ex.Message;
+                    writer.WriteLine("HTTP/1.1 400 Bad Request");
+                    writer.WriteLine("Content-Type: text/plain");
+                    writer.WriteLine($"Content-Length: {responseBody.Length}");
+                    writer.WriteLine();
+                    writer.WriteLine(responseBody);
+                }
+                catch(InvalidOperationException ex)
+                {
+                    responseBody = ex.Message;
+                    writer.WriteLine("HTTP/1.1 409 Conflict");
+                    writer.WriteLine("Content-Type: text/plain");
+                    writer.WriteLine($"Content-Length: {responseBody.Length}");
+                    writer.WriteLine();
+                    writer.WriteLine(responseBody);
+                }
+                catch(Exception ex)
+                {
+                    responseBody = $"Unexpected error: {ex.Message}";
+                    writer.WriteLine("HTTP/1.1 500 Internal Server Error");
+                    writer.WriteLine("Content-Type: text/plain");
+                    writer.WriteLine($"Content-Length: {responseBody.Length}");
+                    writer.WriteLine();
+                    writer.WriteLine(responseBody);
+                }   
             }
             else
             {
