@@ -134,7 +134,7 @@ public class Server
                 IEnumerable<User> users = userRepository.GetAll();
                 responseBody = JsonSerializer.Serialize(users);
                 writer.WriteLine("HTTP/1.1 200 OK");
-                writer.WriteLine("Content-Type: text/plain");
+                writer.WriteLine("Content-Type: application/json");
                 writer.WriteLine($"Content-Length: {responseBody.Length}");
                 writer.WriteLine();
                 writer.Write(responseBody);

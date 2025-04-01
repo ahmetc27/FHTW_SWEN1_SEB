@@ -76,7 +76,7 @@ public class UserRepository
         using IDbConnection connection = new NpgsqlConnection(connectionString);
         using IDbCommand command = connection.CreateCommand();
         connection.Open();
-        command.CommandText = "UPDATE users SET name=@name, password=@password WHERE id=@id";
+        command.CommandText = "UPDATE users SET username=@username, password=@password WHERE id=@id";
         AddParameterWithValue(command, "id", DbType.Int32, user.Id);
         AddParameterWithValue(command, "username", DbType.String, user.Username ?? throw new ArgumentNullException(nameof(user.Username)));
         AddParameterWithValue(command, "password", DbType.String, user.Password ?? throw new ArgumentNullException(nameof(user.Password)));
