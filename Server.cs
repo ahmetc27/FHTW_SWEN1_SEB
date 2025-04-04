@@ -143,7 +143,7 @@ public class Server
             {
                 try
                 {
-                    string name = path.Substring("/users/".Length);
+                    string name = path.Substring("/users/".Length); // Extracts the part after "/users/" (e.g., "/users/123" → "123")
                     User? user = userRepository.GetByUsername(name);
                     
                     if(user == null)
