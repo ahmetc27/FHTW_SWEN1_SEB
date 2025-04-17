@@ -6,7 +6,7 @@ namespace SEB.Repositories
 {
     public class UserRepository(string connectionString)
     {
-        public bool Add(User user)
+        public void Add(User user)
         {
             using IDbConnection connection = new NpgsqlConnection(connectionString);
             using IDbCommand command = connection.CreateCommand();
@@ -17,7 +17,26 @@ namespace SEB.Repositories
             AddParameterWithValue(command, "username", DbType.String, user.Username);
             AddParameterWithValue(command, "password", DbType.String, user.Password);
             user.Id = (int)(command.ExecuteScalar() ?? 0);
-            return user.Id > 0 ? true : false;
+        }
+
+        public bool CheckDuplicate(string username)
+        {
+            using IDbConnection connection = new NpgsqlConnection(connectionString);
+            using IDbCommand command = connection.CreateCommand();
+            connection.Open();
+
+            command.CommandText = "SELECT COUNT(*) from users WHERE username=@username";
+            AddParameterWithValue(command, "username", DbType.String, username);
+
+            int count = Convert.ToInt32(command.ExecuteScalar());
+            return count > 0;
+
+            /*command.CommandText = "SELECT 1 FROM users WHERE username = @username LIMIT 1";
+            AddParameterWithValue(command, "username", DbType.String, username);
+
+            using IDataReader reader = command.ExecuteReader();
+            return reader.Read(); // Returns true if a row exists, false otherwise*/
+
         }
 
         public static void AddParameterWithValue(IDbCommand command, string parameterName, DbType type, object value)
