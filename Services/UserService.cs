@@ -24,5 +24,23 @@ namespace SEB.Service
                 response.SendBadRequest(writer, "Username already exists");
             }
         }
+
+        public void GetUser(StreamWriter writer, Request request)
+        {
+            // extract path: /users/test1
+            string username = "";
+            string[] arr = request.Path.Split('/'); // users test1
+            username = arr[2];
+
+            User? user = userRepository.GetUser(username);
+            string json = JsonSerializer.Serialize(user);
+            response.SendOk(writer, json);
+        }
+
+        public void GetAllUser(StreamWriter writer)
+        {
+            string json = JsonSerializer.Serialize(userRepository.GetAllUsers());
+            response.SendOk(writer, json);
+        }
     }
 }

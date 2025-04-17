@@ -21,11 +21,15 @@ namespace SEB.Http
             }
             else if(request.Method == "GET" && request.Path == "/users")
             {
-
+                userService.GetAllUser(writer);
             }
             else if(request.Method == "GET" && request.Path.Contains("/users"))
             {
-
+                userService.GetUser(writer, request);
+            }
+            else
+            {
+                Console.WriteLine("TEST");
             }
         }
         public void ParseRequestLine(StreamReader reader, StreamWriter writer)
