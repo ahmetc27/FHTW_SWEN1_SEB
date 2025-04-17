@@ -28,6 +28,8 @@ namespace SEB.Http
                 service.ParseRequestLine(reader, writer);
                 service.ParseHeaders(reader, writer);
                 service.ParseBody(reader, writer);
+
+                service.RouteRequest(reader, writer);
             }
         }
     }

@@ -1,10 +1,32 @@
 using System.Text;
+using SEB.Service;
 
 namespace SEB.Http
 {
     public class ServerService
     {
         private Request request = new Request();
+        private UserService userService = new UserService();
+
+        public void RouteRequest(StreamReader reader, StreamWriter writer)
+        {
+            if(request.Method == "POST" && request.Path == "/users")
+            {
+                userService.PostUser(writer, request);
+            }
+            else if(request.Method == "POST" && request.Path == "/sessions")
+            {
+
+            }
+            else if(request.Method == "GET" && request.Path == "/users")
+            {
+
+            }
+            else if(request.Method == "GET" && request.Path.Contains("/users"))
+            {
+
+            }
+        }
         public void ParseRequestLine(StreamReader reader, StreamWriter writer)
         {
             string line = reader.ReadLine() ?? ""; // POST /users HTTP/1.1 
@@ -14,7 +36,7 @@ namespace SEB.Http
             request.Path = arr[1];
             request.Version = arr[2];
 
-            Console.WriteLine($"Method: {request.Method}, Path: {request.Path}, Version: {request.Version}");            
+            Console.WriteLine($"Method: {request.Method}, Path: {request.Path}");            
         }
         public void ParseHeaders(StreamReader reader, StreamWriter writer)
         {
@@ -27,7 +49,7 @@ namespace SEB.Http
                 string headerName = arr[0];
                 string headerValue = arr[1].Trim();
                 request.Headers[headerName] = headerValue;
-                Console.WriteLine($"Header: {headerName} = {headerValue}");
+                //Console.WriteLine($"Header: {headerName} = {headerValue}");
 
                 if(headerName == "Content-Length")
                 {
@@ -54,7 +76,7 @@ namespace SEB.Http
                 }
             }
             request.Body = requestBody.ToString();
-            Console.WriteLine($"Body: {request.Body}");
+            //Console.WriteLine($"Body: {request.Body}");
         }
     }
 }
