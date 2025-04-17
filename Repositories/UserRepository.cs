@@ -19,7 +19,7 @@ namespace SEB.Repositories
             user.Id = (int)(command.ExecuteScalar() ?? 0);
         }
 
-        public bool CheckDuplicate(string username)
+        public bool Exists(string username)
         {
             using IDbConnection connection = new NpgsqlConnection(connectionString);
             using IDbCommand command = connection.CreateCommand();
@@ -30,13 +30,6 @@ namespace SEB.Repositories
 
             int count = Convert.ToInt32(command.ExecuteScalar());
             return count > 0;
-
-            /*command.CommandText = "SELECT 1 FROM users WHERE username = @username LIMIT 1";
-            AddParameterWithValue(command, "username", DbType.String, username);
-
-            using IDataReader reader = command.ExecuteReader();
-            return reader.Read(); // Returns true if a row exists, false otherwise*/
-
         }
 
         public static void AddParameterWithValue(IDbCommand command, string parameterName, DbType type, object value)

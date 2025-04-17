@@ -12,3 +12,8 @@ namespace SEB
         }
     }
 }
+
+// ERLEDIGT! TOKEN: muss in datenbank gespeichert werden
+// ERLEDIGT! TOKEN: passwort muss auch überprüft werden
+// (BaseRepository erstellen)
+// ((exceptions try catch))

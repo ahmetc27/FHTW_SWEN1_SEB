@@ -14,7 +14,7 @@ namespace SEB.Service
             User? user = JsonSerializer.Deserialize<User>(request.Body);
             if(user == null) return; // muss mit return genauer was gemacht werden
 
-            if(!userRepository.CheckDuplicate(user.Username))
+            if(!userRepository.Exists(user.Username))
             {
                 userRepository.Add(user);
                 response.SendCreated(writer, "User created successfully!");

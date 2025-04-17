@@ -7,6 +7,7 @@ namespace SEB.Http
     {
         private Request request = new Request();
         private UserService userService = new UserService();
+        private SessionsService sessionsService = new SessionsService();
 
         public void RouteRequest(StreamReader reader, StreamWriter writer)
         {
@@ -16,7 +17,7 @@ namespace SEB.Http
             }
             else if(request.Method == "POST" && request.Path == "/sessions")
             {
-
+                sessionsService.PostSessions(writer, request);
             }
             else if(request.Method == "GET" && request.Path == "/users")
             {
