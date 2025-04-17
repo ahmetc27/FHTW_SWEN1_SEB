@@ -1,10 +1,14 @@
-﻿namespace SEB
+﻿using SEB.Models;
+using SEB.Http;
+
+namespace SEB
 {
     public class Program
     {
         public static void Main(string[] args)
         {
-            Console.WriteLine("Test");
+            Server server = new Server(10001);
+            server.Start();
         }
     }
 }
