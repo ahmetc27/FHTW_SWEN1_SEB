@@ -6,7 +6,7 @@ namespace SEB.Repositories
 {
     public class UserRepository(string connectionString)
     {
-        public void Add(User user)
+        public bool Add(User user)
         {
             using IDbConnection connection = new NpgsqlConnection(connectionString);
             using IDbCommand command = connection.CreateCommand();
@@ -17,6 +17,7 @@ namespace SEB.Repositories
             AddParameterWithValue(command, "username", DbType.String, user.Username);
             AddParameterWithValue(command, "password", DbType.String, user.Password);
             user.Id = (int)(command.ExecuteScalar() ?? 0);
+            return user.Id > 0 ? true : false;
         }
 
         public static void AddParameterWithValue(IDbCommand command, string parameterName, DbType type, object value)
