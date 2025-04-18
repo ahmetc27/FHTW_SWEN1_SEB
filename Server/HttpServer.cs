@@ -4,11 +4,11 @@ using SEB.Services;
 
 namespace SEB.Server
 {
-    public class Server
+    public class HttpServer
     {
         private TcpListener tcpListener;
         private readonly ServerService service;
-        public Server(int port)
+        public HttpServer(int port)
         {
             tcpListener = new TcpListener(IPAddress.Any, port);
             service = new ServerService();
@@ -24,7 +24,7 @@ namespace SEB.Server
 
                 using NetworkStream stream = tcpClient.GetStream();
                 using StreamReader reader = new StreamReader(stream);
-                using StreamWriter writer = new StreamWriter(stream);
+                using StreamWriter writer = new StreamWriter(stream) { AutoFlush = true };
 
                 service.ParseRequestLine(reader, writer);
                 service.ParseHeaders(reader, writer);

@@ -1,5 +1,4 @@
-﻿using SEB.Models;
-using SEB.Http;
+﻿using SEB.Server;
 
 namespace SEB
 {
@@ -7,7 +6,7 @@ namespace SEB
     {
         public static void Main(string[] args)
         {
-            Server server = new Server(10001);
+            HttpServer server = new HttpServer(10001);
             server.Start();
         }
     }

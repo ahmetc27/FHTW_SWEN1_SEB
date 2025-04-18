@@ -21,9 +21,10 @@ namespace SEB.Services
 
             if(userRepository.Exists(user.Username))
             {
+                user.Token = $"{user.Username}-sebToken";
+                
                 if(tokenRepository.CreateToken(user))
                 {
-                    user.Token = $"{user.Username}-sebToken";
                     response.SendCreated(writer, "Token created successfully!");
                 }
                 else
