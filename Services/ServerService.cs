@@ -8,6 +8,7 @@ namespace SEB.Services
         private Request request = new Request();
         private UserService userService = new UserService();
         private SessionService sessionsService = new SessionService();
+        private StatsService statsService = new StatsService();
 
         public void RouteRequest(StreamReader reader, StreamWriter writer)
         {
@@ -30,6 +31,10 @@ namespace SEB.Services
             else if(request.Method == "PUT" && request.Path.Contains("/users"))
             {
                 userService.UpdateUser(writer, request);
+            }
+            else if(request.Method == "GET" && request.Path == "/stats")
+            {
+                statsService.GetStats(writer, request);
             }
         }
         public void ParseRequestLine(StreamReader reader, StreamWriter writer)
@@ -54,7 +59,7 @@ namespace SEB.Services
                 string headerName = arr[0];
                 string headerValue = arr[1].Trim();
                 request.Headers[headerName] = headerValue;
-                Console.WriteLine($"Header: {headerName} = {headerValue}");
+                //Console.WriteLine($"Header: {headerName} = {headerValue}");
 
                 if(headerName == "Content-Length")
                 {
@@ -81,7 +86,7 @@ namespace SEB.Services
                 }
             }
             request.Body = requestBody.ToString();
-            Console.WriteLine($"Body: {request.Body}");
+            //Console.WriteLine($"Body: {request.Body}");
         }
         public bool MethodHasBody()
         {

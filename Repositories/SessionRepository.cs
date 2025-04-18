@@ -40,5 +40,24 @@ namespace SEB.Repositories
             using IDataReader reader = command.ExecuteReader();
             return reader.Read();
         }
+
+        public string GetUsernameByToken(string token)
+        {
+            using IDbConnection connection = new NpgsqlConnection(connectionString);
+            using IDbCommand command = connection.CreateCommand();
+            connection.Open();
+
+            command.CommandText = @"SELECT username FROM users WHERE token=@token";
+            AddParameterWithValue(command, "token", DbType.String, token);
+
+            string username = "";
+
+            using IDataReader reader = command.ExecuteReader();
+            while(reader.Read())
+            {
+                username = reader.GetString(0);
+            }
+            return username;
+        }
     }
 }
