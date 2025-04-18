@@ -32,5 +32,22 @@ namespace SEB.Repositories
             }
             return true;
         }
+
+        public bool GetToken(string token)
+        {
+            using IDbConnection connection = new NpgsqlConnection(connectionString);
+            using IDbCommand command = connection.CreateCommand();
+            connection.Open();
+
+            command.CommandText = @"SELECT id, username, password, elo, token FROM users WHERE token = @token;";
+            AddParameterWithValue(command, "token", DbType.String, token);
+
+            using IDataReader reader = command.ExecuteReader();
+            if(reader.Read())
+            {
+                return true;
+            }
+            return false;
+        }
     }
 }

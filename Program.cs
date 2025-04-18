@@ -17,3 +17,5 @@ namespace SEB
 // ERLEDIGT! TOKEN: passwort muss auch überprüft werden
 // (BaseRepository erstellen)
 // ((exceptions try catch))
+
+//17.04 letzer stand: wieso curl bat 3) nicht geht und put users (profile edit)
