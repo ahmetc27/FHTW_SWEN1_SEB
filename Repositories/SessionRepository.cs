@@ -14,23 +14,18 @@ namespace SEB.Repositories
             parameter.Value = value ?? DBNull.Value;
             command.Parameters.Add(parameter);
         }
-        public bool CreateToken(User user)
+        public bool SaveToken(User user)
         {
             using IDbConnection connection = new NpgsqlConnection(connectionString);
             using IDbCommand command = connection.CreateCommand();
             connection.Open();
 
-            command.CommandText = "UPDATE users SET token = @token WHERE username = @username AND password = @password";
+            command.CommandText = "UPDATE users SET token = @token WHERE id=@id";
             AddParameterWithValue(command, "token", DbType.String, user.Token);
-            AddParameterWithValue(command, "username", DbType.String, user.Username);
-            AddParameterWithValue(command, "password", DbType.String, user.Password);
+            AddParameterWithValue(command, "id", DbType.Int32, user.Id);
             
             int rowsAffected = command.ExecuteNonQuery();
-            if(rowsAffected == 0)
-            {
-                return false;
-            }
-            return true;
+            return rowsAffected > 0;
         }
 
         public bool ExistToken(string token)
@@ -39,15 +34,11 @@ namespace SEB.Repositories
             using IDbCommand command = connection.CreateCommand();
             connection.Open();
 
-            command.CommandText = @"SELECT * FROM users WHERE token = @token;";
+            command.CommandText = @"SELECT 1 FROM users WHERE token = @token LIMIT 1;";
             AddParameterWithValue(command, "token", DbType.String, token);
 
             using IDataReader reader = command.ExecuteReader();
-            if(reader.Read())
-            {
-                return true;
-            }
-            return false;
+            return reader.Read();
         }
     }
 }

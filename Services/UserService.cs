@@ -87,19 +87,6 @@ namespace SEB.Services
 
         public void UpdateUser(StreamWriter writer, Request request)
         {
-            User? user = JsonSerializer.Deserialize<User>(request.Body);
-            if(user == null)
-            {
-                response.SendBadRequest(writer, "Invalid user data");
-                return;
-            }
-
-            if(string.IsNullOrEmpty(user.Token))
-            {
-                response.SendUnauthorized(writer, "No active user token found");
-                return;
-            }
-
             if(!request.Headers.ContainsKey("Authorization"))
             {
                 response.SendUnauthorized(writer, "Authorization header required");
@@ -109,14 +96,46 @@ namespace SEB.Services
             string authHeader = request.Headers["Authorization"];
             string receivedToken = authHeader.Replace("Basic ", "").Trim();
 
-            if(sessionRepository.ExistToken(user.Token) && user.Token == receivedToken)
+            string[] arr = request.Path.Split('/'); // /users/test2
+
+            if(arr.Length < 3)
             {
-                userRepository.Update(user);
+                response.SendBadRequest(writer, "Invalid path");
+                return;
+            }
+            string username = arr[2];
+
+            User? userInDb = userRepository.GetUser(username);
+
+            if(userInDb == null)
+            {
+                response.SendNotFound(writer, "User not found");
+                return;
+            }
+
+            if(userInDb.Token != receivedToken || !sessionRepository.ExistToken(receivedToken))
+            {
+                response.SendUnauthorized(writer, "Invalid authentication token");
+                return;
+            }
+
+            Dictionary<string, string>? userDetails = JsonSerializer.Deserialize<Dictionary<string, string>>(request.Body);
+
+            if(userDetails != null)
+            {
+                if(userDetails.ContainsKey("Password")) userInDb.Password = userDetails["Password"];
+                if(userDetails.ContainsKey("Elo")) userInDb.Elo = int.Parse(userDetails["Elo"]);
+                if(userDetails.ContainsKey("Token")) userInDb.Token = userDetails["Token"];
+                if(userDetails.ContainsKey("Bio")) userInDb.Bio = userDetails["Bio"];
+                if(userDetails.ContainsKey("Image")) userInDb.Image = userDetails["Image"];
+
+                userRepository.Update(userInDb);
                 response.SendOk(writer, "User updated successfully!");
             }
             else
             {
-                response.SendUnauthorized(writer, "Invalid authentication token");
+                response.SendBadRequest(writer, "Invalid user details in request body");
+                return;
             }
         }
     }

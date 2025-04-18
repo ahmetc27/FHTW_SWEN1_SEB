@@ -38,7 +38,7 @@ namespace SEB.Repositories
             using IDbCommand command = connection.CreateCommand();
             connection.Open();
 
-            command.CommandText = @"SELECT id, username, password, elo, token, bio, image FROM users WHERE username = @username;";
+            command.CommandText = @"SELECT * FROM users WHERE username = @username;";
             AddParameterWithValue(command, "username", DbType.String, username);
 
             using IDataReader reader = command.ExecuteReader();
@@ -91,7 +91,7 @@ namespace SEB.Repositories
         using IDbCommand command = connection.CreateCommand();
         connection.Open();
 
-        command.CommandText = "UPDATE users SET username=@username, password=@password, elo=@elo, token=@token, bio=@bio, image=@image WHERE username=@username AND password=@password";
+        command.CommandText = "UPDATE users SET username=@username, password=@password, elo=@elo, token=@token, bio=@bio, image=@image WHERE id=@id";
         AddParameterWithValue(command, "id", DbType.Int32, user.Id);
         AddParameterWithValue(command, "username", DbType.String, user.Username);
         AddParameterWithValue(command, "password", DbType.String, user.Password);

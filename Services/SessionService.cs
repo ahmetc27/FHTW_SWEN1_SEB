@@ -8,33 +8,39 @@ namespace SEB.Services
     public class SessionService
     {
         private UserRepository userRepository = new UserRepository("Host=localhost;Username=postgres;Password=postgres;Database=postgres");
-        private SessionRepository tokenRepository = new SessionRepository("Host=localhost;Username=postgres;Password=postgres;Database=postgres");
+        private SessionRepository sessionRepository = new SessionRepository("Host=localhost;Username=postgres;Password=postgres;Database=postgres");
         private Response response = new Response();
         public void PostSessions(StreamWriter writer, Request request)
         {
-            User? user = JsonSerializer.Deserialize<User>(request.Body);
-            if(user == null)
+            User? loginRequest = JsonSerializer.Deserialize<User>(request.Body);
+            if(loginRequest == null)
+            {
+                response.SendNotFound(writer, "Invalid request body");
+                return;
+            }
+
+            User? userInDb = userRepository.GetUser(loginRequest.Username);
+            if(userInDb == null)
             {
                 response.SendNotFound(writer, "User not found");
                 return;
             }
 
-            if(userRepository.Exists(user.Username))
+            if(userInDb.Password != loginRequest.Password)
             {
-                user.Token = $"{user.Username}-sebToken";
-                
-                if(tokenRepository.CreateToken(user))
-                {
-                    response.SendCreated(writer, "Token created successfully!");
-                }
-                else
-                {
-                    response.SendBadRequest(writer, "No user found with the given username and password.");
-                }
+                response.SendUnauthorized(writer, "Incorrect Password");
+                return;
+            }
+
+            userInDb.Token = $"{userInDb.Username}-sebToken";
+
+            if(sessionRepository.SaveToken(userInDb))
+            {
+                response.SendCreated(writer, "Token created successfully!");
             }
             else
             {
-                response.SendBadRequest(writer, "Token cannot be created since user does not exist!");
+                response.SendInternalError(writer, "Token could not be saved");
             }
         }
     }
