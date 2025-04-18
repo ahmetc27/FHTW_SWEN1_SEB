@@ -13,7 +13,11 @@ namespace SEB.Service
         public void PostSessions(StreamWriter writer, Request request)
         {
             User? user = JsonSerializer.Deserialize<User>(request.Body);
-            if(user == null) return; // muss mit return genauer was gemacht werden
+            if(user == null)
+            {
+                response.SendBadRequest(writer, "User must not be null");
+                return;
+            }
 
             if(userRepository.Exists(user.Username))
             {

@@ -27,14 +27,14 @@ namespace SEB.Http
             {
                 userService.GetUser(writer, request);
             }
-            else
+            else if(request.Method == "PUT" && request.Path.Contains("/users"))
             {
-                Console.WriteLine("TEST");
+                userService.UpdateUser(writer, request);
             }
         }
         public void ParseRequestLine(StreamReader reader, StreamWriter writer)
         {
-            string line = reader.ReadLine() ?? ""; // POST /users HTTP/1.1 
+            string line = reader.ReadLine() ?? ""; // POST /users HTTP/1.1
 
             string[] arr = line.Split(' ');
             request.Method = arr[0];

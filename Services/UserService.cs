@@ -43,25 +43,46 @@ namespace SEB.Service
                 response.SendBadRequest(writer, "User may be null");
                 return;
             }
-            if(sessionRepository.GetToken(user.Token))
+
+            if(string.IsNullOrEmpty(user.Token))
             {
-                string token = request.Headers["Authorization"];
-                if(token.Contains($"{user.Token}"))
-                {
-                    string json = JsonSerializer.Serialize(user);
-                    response.SendOk(writer, json);
-                }
-                else
-                {
-                    response.SendBadRequest(writer, "No valid token found in header");
-                }
+                response.SendUnauthorized(writer, "No active user token found");
+                return;
+            }
+
+            if(!request.Headers.ContainsKey("Authorization"))
+            {
+                response.SendUnauthorized(writer, "Authorization header required");
+                return;
+            }
+
+            string authHeader = request.Headers["Authorization"];
+            string receivedToken = authHeader.Replace("Basic ", "").Trim();
+
+            if(sessionRepository.ExistToken(user.Token) && user.Token == receivedToken)
+            // test1 cannot send test2-token
+            {
+                string json = JsonSerializer.Serialize(user);
+                response.SendOk(writer, json);
+            }
+            else
+            {
+                response.SendUnauthorized(writer, "Invalid authentication token");
             }
         }
 
         public void GetAllUser(StreamWriter writer)
         {
-            string json = JsonSerializer.Serialize(userRepository.GetAllUsers());
-            response.SendOk(writer, json);
+            try
+            {
+                string json = JsonSerializer.Serialize(userRepository.GetAllUsers());
+                response.SendOk(writer, json);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in GetAllUser: {ex.Message}");
+                response.SendInternalError(writer, $"An error occurred: {ex.Message}");
+            }
         }
 
         public void UpdateUser(StreamWriter writer, Request request)
@@ -72,8 +93,31 @@ namespace SEB.Service
                 response.SendBadRequest(writer, "Invalid user data");
                 return;
             }
-            userRepository.Update(user);
-            response.SendOk(writer, "User updated successfully!");
+
+            if(string.IsNullOrEmpty(user.Token))
+            {
+                response.SendUnauthorized(writer, "No active user token found");
+                return;
+            }
+
+            if(!request.Headers.ContainsKey("Authorization"))
+            {
+                response.SendUnauthorized(writer, "Authorization header required");
+                return;
+            }
+
+            string authHeader = request.Headers["Authorization"];
+            string receivedToken = authHeader.Replace("Basic ", "").Trim();
+
+            if(sessionRepository.ExistToken(user.Token) && user.Token == receivedToken)
+            {
+                userRepository.Update(user);
+                response.SendOk(writer, "User updated successfully!");
+            }
+            else
+            {
+                response.SendUnauthorized(writer, "Invalid authentication token");
+            }
         }
     }
 }
