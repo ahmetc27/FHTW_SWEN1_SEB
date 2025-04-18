@@ -1,7 +1,8 @@
 using System.Net;
 using System.Net.Sockets;
+using SEB.Services;
 
-namespace SEB.Http
+namespace SEB.Server
 {
     public class Server
     {

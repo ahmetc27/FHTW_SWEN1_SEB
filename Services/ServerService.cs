@@ -1,7 +1,7 @@
 using System.Text;
-using SEB.Service;
+using SEB.Server;
 
-namespace SEB.Http
+namespace SEB.Services
 {
     public class ServerService
     {

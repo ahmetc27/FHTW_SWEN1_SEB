@@ -1,9 +1,9 @@
 using SEB.Models;
-using SEB.Http;
+using SEB.Server;
 using SEB.Repositories;
 using System.Text.Json;
 
-namespace SEB.Service
+namespace SEB.Services
 {
     public class UserService
     {
@@ -40,7 +40,7 @@ namespace SEB.Service
             User? user = userRepository.GetUser(username);
             if(user == null)
             {
-                response.SendBadRequest(writer, "User may be null");
+                response.SendNotFound(writer, "User not found");
                 return;
             }
 

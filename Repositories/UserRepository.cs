@@ -92,7 +92,7 @@ namespace SEB.Repositories
         using IDbCommand command = connection.CreateCommand();
         connection.Open();
 
-        command.CommandText = "UPDATE users SET username=@username, password=@password, token=@token, bio=@bio, image=@image WHERE id=@id";
+        command.CommandText = "UPDATE users SET username=@username, password=@password, elo=@elo, token=@token, bio=@bio, image=@image WHERE username=@username AND password=@password";
         AddParameterWithValue(command, "id", DbType.Int32, user.Id);
         AddParameterWithValue(command, "username", DbType.String, user.Username);
         AddParameterWithValue(command, "password", DbType.String, user.Password);

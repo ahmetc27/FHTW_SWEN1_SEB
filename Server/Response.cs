@@ -1,6 +1,4 @@
-using System.Net;
-
-namespace SEB.Http
+namespace SEB.Server
 {
     public class Response
     {

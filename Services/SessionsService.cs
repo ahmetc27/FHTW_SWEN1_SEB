@@ -1,9 +1,9 @@
 using SEB.Models;
-using SEB.Http;
+using SEB.Server;
 using SEB.Repositories;
 using System.Text.Json;
 
-namespace SEB.Service
+namespace SEB.Services
 {
     public class SessionsService
     {
@@ -15,15 +15,15 @@ namespace SEB.Service
             User? user = JsonSerializer.Deserialize<User>(request.Body);
             if(user == null)
             {
-                response.SendBadRequest(writer, "User must not be null");
+                response.SendNotFound(writer, "User not found");
                 return;
             }
 
             if(userRepository.Exists(user.Username))
             {
-                user.Token = $"{user.Username}-Token";
                 if(tokenRepository.CreateToken(user))
                 {
+                    user.Token = $"{user.Username}-sebToken";
                     response.SendCreated(writer, "Token created successfully!");
                 }
                 else
