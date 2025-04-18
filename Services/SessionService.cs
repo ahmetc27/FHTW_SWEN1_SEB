@@ -5,7 +5,7 @@ using System.Text.Json;
 
 namespace SEB.Services
 {
-    public class SessionsService
+    public class SessionService
     {
         private UserRepository userRepository = new UserRepository("Host=localhost;Username=postgres;Password=postgres;Database=postgres");
         private SessionRepository tokenRepository = new SessionRepository("Host=localhost;Username=postgres;Password=postgres;Database=postgres");

@@ -7,7 +7,7 @@ namespace SEB.Services
     {
         private Request request = new Request();
         private UserService userService = new UserService();
-        private SessionsService sessionsService = new SessionsService();
+        private SessionService sessionsService = new SessionService();
 
         public void RouteRequest(StreamReader reader, StreamWriter writer)
         {
