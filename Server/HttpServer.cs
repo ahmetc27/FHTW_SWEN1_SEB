@@ -28,7 +28,7 @@ namespace SEB.Server
 
                 service.ParseRequestLine(reader, writer);
                 service.ParseHeaders(reader, writer);
-                service.ParseBody(reader, writer);
+                if(service.MethodHasBody()) service.ParseBody(reader, writer);
 
                 service.RouteRequest(reader, writer);
             }

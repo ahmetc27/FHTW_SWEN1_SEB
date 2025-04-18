@@ -54,7 +54,7 @@ namespace SEB.Services
                 string headerName = arr[0];
                 string headerValue = arr[1].Trim();
                 request.Headers[headerName] = headerValue;
-                //Console.WriteLine($"Header: {headerName} = {headerValue}");
+                Console.WriteLine($"Header: {headerName} = {headerValue}");
 
                 if(headerName == "Content-Length")
                 {
@@ -81,7 +81,11 @@ namespace SEB.Services
                 }
             }
             request.Body = requestBody.ToString();
-            //Console.WriteLine($"Body: {request.Body}");
+            Console.WriteLine($"Body: {request.Body}");
+        }
+        public bool MethodHasBody()
+        {
+            return request.Method == "POST" || request.Method == "PUT";
         }
     }
 }
