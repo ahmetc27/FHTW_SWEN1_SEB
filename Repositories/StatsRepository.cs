@@ -3,22 +3,8 @@ using Npgsql;
 
 namespace SEB.Repositories
 {
-    public class StatsRepository
+    public class StatsRepository : BaseRepository
     {
-        private readonly string connectionString;
-
-        public StatsRepository()
-        {
-            connectionString = AppConfig.ConnectionString;
-        }
-        public static void AddParameterWithValue(IDbCommand command, string parameterName, DbType type, object value)
-        {
-            var parameter = command.CreateParameter();
-            parameter.DbType = type;
-            parameter.ParameterName = parameterName;
-            parameter.Value = value ?? DBNull.Value;
-            command.Parameters.Add(parameter);
-        }
         public (int Elo, int TotalPushups) GetStats(string username)
         {
             using IDbConnection connection = new NpgsqlConnection(connectionString);

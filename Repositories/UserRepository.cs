@@ -4,14 +4,8 @@ using Npgsql;
 
 namespace SEB.Repositories
 {
-    public class UserRepository
+    public class UserRepository : BaseRepository
     {
-        private readonly string connectionString;
-
-        public UserRepository()
-        {
-            connectionString = AppConfig.ConnectionString;
-        }
         public void Add(User user)
         {
             using IDbConnection connection = new NpgsqlConnection(connectionString);
@@ -91,30 +85,21 @@ namespace SEB.Repositories
             return users;
         }
 
-    public void Update(User user)
-    {
-        using IDbConnection connection = new NpgsqlConnection(connectionString);
-        using IDbCommand command = connection.CreateCommand();
-        connection.Open();
-
-        command.CommandText = "UPDATE users SET username=@username, password=@password, elo=@elo, token=@token, bio=@bio, image=@image WHERE id=@id";
-        AddParameterWithValue(command, "id", DbType.Int32, user.Id);
-        AddParameterWithValue(command, "username", DbType.String, user.Username);
-        AddParameterWithValue(command, "password", DbType.String, user.Password);
-        AddParameterWithValue(command, "elo", DbType.Int32, user.Elo);
-        AddParameterWithValue(command, "token", DbType.String, user.Token);
-        AddParameterWithValue(command, "bio", DbType.String, user.Bio);
-        AddParameterWithValue(command, "image", DbType.String, user.Image);
-        command.ExecuteNonQuery();
-    }
-
-        public static void AddParameterWithValue(IDbCommand command, string parameterName, DbType type, object value)
+        public void Update(User user)
         {
-            var parameter = command.CreateParameter();
-            parameter.DbType = type;
-            parameter.ParameterName = parameterName;
-            parameter.Value = value ?? DBNull.Value;
-            command.Parameters.Add(parameter);
+            using IDbConnection connection = new NpgsqlConnection(connectionString);
+            using IDbCommand command = connection.CreateCommand();
+            connection.Open();
+
+            command.CommandText = "UPDATE users SET username=@username, password=@password, elo=@elo, token=@token, bio=@bio, image=@image WHERE id=@id";
+            AddParameterWithValue(command, "id", DbType.Int32, user.Id);
+            AddParameterWithValue(command, "username", DbType.String, user.Username);
+            AddParameterWithValue(command, "password", DbType.String, user.Password);
+            AddParameterWithValue(command, "elo", DbType.Int32, user.Elo);
+            AddParameterWithValue(command, "token", DbType.String, user.Token);
+            AddParameterWithValue(command, "bio", DbType.String, user.Bio);
+            AddParameterWithValue(command, "image", DbType.String, user.Image);
+            command.ExecuteNonQuery();
         }
     }
 }

@@ -4,22 +4,8 @@ using Npgsql;
 
 namespace SEB.Repositories
 {
-    public class SessionRepository
+    public class SessionRepository : BaseRepository
     {
-        private readonly string connectionString;
-
-        public SessionRepository()
-        {
-            connectionString = AppConfig.ConnectionString;
-        }
-        public static void AddParameterWithValue(IDbCommand command, string parameterName, DbType type, object value)
-        {
-            var parameter = command.CreateParameter();
-            parameter.DbType = type;
-            parameter.ParameterName = parameterName;
-            parameter.Value = value ?? DBNull.Value;
-            command.Parameters.Add(parameter);
-        }
         public bool SaveToken(User user)
         {
             using IDbConnection connection = new NpgsqlConnection(connectionString);

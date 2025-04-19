@@ -5,23 +5,8 @@ using SEB.Models;
 namespace SEB.Repositories
 {
 
-    public class HistoryRepository
+    public class HistoryRepository : BaseRepository
     {
-        private readonly string connectionString;
-
-        public HistoryRepository()
-        {
-            connectionString = AppConfig.ConnectionString;
-        }
-        public static void AddParameterWithValue(IDbCommand command, string parameterName, DbType type, object value)
-        {
-            var parameter = command.CreateParameter();
-            parameter.DbType = type;
-            parameter.ParameterName = parameterName;
-            parameter.Value = value ?? DBNull.Value;
-            command.Parameters.Add(parameter);
-        }
-
         public List<History> GetUserHistory(int userId)
         {
             List<History> historyEntries = new List<History>();
