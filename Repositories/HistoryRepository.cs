@@ -47,5 +47,25 @@ namespace SEB.Repositories
             
             return historyEntries;
         }
+
+        public int AddHistoryEntry(int userId, int pushupCount, int durationInSeconds, int? tournamentId = null)
+        {
+            using IDbConnection connection = new NpgsqlConnection(connectionString);
+            connection.Open();
+
+            using IDbCommand command = connection.CreateCommand();
+            command.CommandText = @"
+                INSERT INTO history (user_id, pushup_count, duration, tournament_id)
+                VALUES (@userId, @pushupCount, @durationInSeconds, @tournamentId)
+                RETURNING id";
+                
+            AddParameterWithValue(command, "userId", DbType.Int32, userId);
+            AddParameterWithValue(command, "pushupCount", DbType.Int32, pushupCount);
+            AddParameterWithValue(command, "durationInSeconds", DbType.Int32, durationInSeconds);
+            AddParameterWithValue(command, "tournamentId", DbType.Int32, tournamentId.HasValue ? tournamentId.Value : DBNull.Value);
+            
+            int historyId = Convert.ToInt32(command.ExecuteScalar());
+            return historyId;
+        }
     }
 }

@@ -75,5 +75,42 @@ namespace SEB.Repositories
             
             return tournament;
         }
+
+        public int CreateTournament()
+        {
+            using IDbConnection connection = new NpgsqlConnection(connectionString);
+            connection.Open();
+            
+            using IDbCommand command = connection.CreateCommand();
+            command.CommandText = @"
+                INSERT INTO tournaments (start_time, status)
+                VALUES (CURRENT_TIMESTAMP, 'in_progress')
+                RETURNING id";
+                
+            int tournamentId = Convert.ToInt32(command.ExecuteScalar());
+            return tournamentId;
+        }
+
+        // Find active tournament or return null if none exist
+        public int? GetActiveTournamentId()
+        {
+            using IDbConnection connection = new NpgsqlConnection(connectionString);
+            connection.Open();
+            
+            using IDbCommand command = connection.CreateCommand();
+            command.CommandText = @"
+                SELECT id FROM tournaments 
+                WHERE status = 'in_progress'
+                ORDER BY start_time DESC 
+                LIMIT 1";
+                
+            object? result = command.ExecuteScalar();
+            if(result != null && result != DBNull.Value)
+            {
+                return Convert.ToInt32(result);
+            }
+            
+            return null;
+        }
     }
 }

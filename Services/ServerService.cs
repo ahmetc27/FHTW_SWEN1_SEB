@@ -51,6 +51,10 @@ namespace SEB.Services
             {
                 tournamentService.GetCurrentTournament(writer, request);
             }
+            else if(request.Method == "POST" && request.Path == "/history")
+            {
+                historyService.AddHistoryEntry(writer, request);
+            }
         }
         public void ParseRequestLine(StreamReader reader, StreamWriter writer)
         {
