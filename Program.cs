@@ -6,7 +6,8 @@ namespace SEB
     {
         public static void Main(string[] args)
         {
-            HttpServer server = new HttpServer(10001);
+            int port = AppConfig.ServerPort;
+            HttpServer server = new HttpServer(port);
             server.Start();
         }
     }
