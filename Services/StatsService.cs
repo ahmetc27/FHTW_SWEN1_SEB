@@ -22,7 +22,7 @@ namespace SEB.Services
 
             if(!sessionRepository.ExistToken(receivedToken))
             {
-                response.SendNotFound(writer, "Token not found");
+                response.SendUnauthorized(writer, "Invalid token");
                 return;
             }
             string username = sessionRepository.GetUsernameByToken(receivedToken);
