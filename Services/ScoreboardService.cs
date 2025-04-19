@@ -9,21 +9,17 @@ namespace SEB.Services
         private Response response = new();
         private SessionRepository sessionRepository = new();
         private ScoreboardRepository scoreboardRepository = new();
+        private AuthService authService;
+        public ScoreboardService()
+        {
+            authService = new AuthService(sessionRepository);
+        }
     
         public void GetScoreboard(StreamWriter writer, Request request)
         {
-            if(!request.Headers.ContainsKey("Authorization"))
+            if(!authService.IsAuthorized(request, response, out string username))
             {
-                response.SendUnauthorized(writer, "Authorization header required");
-                return;
-            }
-
-            string authHeader = request.Headers["Authorization"];
-            string receivedToken = authHeader.Replace("Basic ", "").Trim();
-
-            if(!sessionRepository.ExistToken(receivedToken))
-            {
-                response.SendUnauthorized(writer, "Invalid token");
+                response.SendUnauthorized(writer, "Unauthorized");
                 return;
             }
 

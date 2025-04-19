@@ -12,25 +12,21 @@ namespace SEB.Services
         private HistoryRepository historyRepository = new();
         private SessionRepository sessionRepository = new();
         private TournamentRepository tournamentRepository = new();
+        private AuthService authService;
+
+        public HistoryService()
+        {
+            authService = new AuthService(sessionRepository);
+        }
     
         public void GetHistory(StreamWriter writer, Request request)
         {
-            if(!request.Headers.ContainsKey("Authorization"))
+            if(!authService.IsAuthorized(request, response, out string username))
             {
-                response.SendUnauthorized(writer, "Authorization header required");
+                response.SendUnauthorized(writer, "Unauthorized");
                 return;
             }
 
-            string authHeader = request.Headers["Authorization"];
-            string receivedToken = authHeader.Replace("Basic ", "").Trim();
-
-            if(!sessionRepository.ExistToken(receivedToken))
-            {
-                response.SendUnauthorized(writer, "Invalid token");
-                return;
-            }
-
-            string username = sessionRepository.GetUsernameByToken(receivedToken);
             User? user = userRepository.GetUser(username);
 
             if(user == null)
@@ -41,28 +37,17 @@ namespace SEB.Services
             
             var history = historyRepository.GetUserHistory(user.Id);
             string json = JsonSerializer.Serialize(history);
-
             response.SendOk(writer, json);
         }
 
         public void AddHistoryEntry(StreamWriter writer, Request request)
         {
-            if(!request.Headers.ContainsKey("Authorization"))
+            if(!authService.IsAuthorized(request, response, out string username))
             {
-                response.SendUnauthorized(writer, "Authorization header required");
+                response.SendUnauthorized(writer, "Unauthorized");
                 return;
             }
             
-            string authHeader = request.Headers["Authorization"];
-            string receivedToken = authHeader.Replace("Basic ", "").Trim();
-            
-            if(!sessionRepository.ExistToken(receivedToken))
-            {
-                response.SendUnauthorized(writer, "Invalid token");
-                return;
-            }
-            
-            string username = sessionRepository.GetUsernameByToken(receivedToken);
             User? user = userRepository.GetUser(username);
             
             if(user == null)
