@@ -7,11 +7,11 @@ namespace SEB.Services
 {
     public class HistoryService
     {
-        private Response response = new Response();
-        private UserRepository userRepository = new UserRepository();
-        private HistoryRepository historyRepository = new HistoryRepository();
-        private SessionRepository sessionRepository = new SessionRepository();
-        private TournamentRepository tournamentRepository = new TournamentRepository();
+        private Response response = new();
+        private UserRepository userRepository = new();
+        private HistoryRepository historyRepository = new();
+        private SessionRepository sessionRepository = new();
+        private TournamentRepository tournamentRepository = new();
     
         public void GetHistory(StreamWriter writer, Request request)
         {

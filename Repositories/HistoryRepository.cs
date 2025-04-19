@@ -9,7 +9,7 @@ namespace SEB.Repositories
     {
         public List<History> GetUserHistory(int userId)
         {
-            List<History> historyEntries = new List<History>();
+            List<History> historyEntries = new();
 
             using IDbConnection connection = new NpgsqlConnection(connectionString);
             connection.Open();

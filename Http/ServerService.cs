@@ -5,12 +5,12 @@ namespace SEB.Http
 {
     public class ServerService
     {
-        private UserService userService = new UserService();
-        private SessionService sessionsService = new SessionService();
-        private StatsService statsService = new StatsService();
-        private ScoreboardService scoreboardService = new ScoreboardService();
-        private HistoryService historyService = new HistoryService();
-        private TournamentService tournamentService = new TournamentService();
+        private UserService userService = new();
+        private SessionService sessionsService = new();
+        private StatsService statsService = new();
+        private ScoreboardService scoreboardService = new();
+        private HistoryService historyService = new();
+        private TournamentService tournamentService = new();
 
         public void ParseRequest(StreamReader reader, Request request)
         {

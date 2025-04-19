@@ -8,6 +8,6 @@ namespace SEB.Models
         public string Status { get; set; } = "in_progress"; // in_progress, completed
         public int? WinnerId { get; set; }
         public bool IsDraw { get; set; } = false;
-        public List<Participant> Participants { get; set; } = new List<Participant>();
+        public List<Participant> Participants { get; set; } = new();
     }
 }

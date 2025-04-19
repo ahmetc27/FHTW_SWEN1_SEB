@@ -7,9 +7,9 @@ namespace SEB.Services
 {
     public class SessionService
     {
-        private UserRepository userRepository = new UserRepository();
-        private SessionRepository sessionRepository = new SessionRepository();
-        private Response response = new Response();
+        private UserRepository userRepository = new();
+        private SessionRepository sessionRepository = new();
+        private Response response = new();
         public void PostSessions(StreamWriter writer, Request request)
         {
             User? loginRequest = JsonSerializer.Deserialize<User>(request.Body);

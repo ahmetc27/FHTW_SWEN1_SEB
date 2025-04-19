@@ -6,9 +6,9 @@ namespace SEB.Services
 {
     public class TournamentService
     {
-        private TournamentRepository tournamentRepository = new TournamentRepository();
-        private SessionRepository sessionRepository = new SessionRepository();
-        private Response response = new Response();
+        private TournamentRepository tournamentRepository = new();
+        private SessionRepository sessionRepository = new();
+        private Response response = new();
         public void GetCurrentTournament(StreamWriter writer, Request request)
         {
             if(!request.Headers.ContainsKey("Authorization"))

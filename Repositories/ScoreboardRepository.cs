@@ -9,7 +9,7 @@ namespace SEB.Repositories
     {
         public List<UserStats> GetScoreboard()
         {
-            List<UserStats> scoreboard = new List<UserStats>();
+            List<UserStats> scoreboard = new();
             
             using IDbConnection connection = new NpgsqlConnection(connectionString);
             connection.Open();

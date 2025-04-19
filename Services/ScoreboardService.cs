@@ -6,9 +6,9 @@ namespace SEB.Services
 {
     public class ScoreboardService
     {
-        private Response response = new Response();
-        private SessionRepository sessionRepository = new SessionRepository();
-        private ScoreboardRepository scoreboardRepository = new ScoreboardRepository();
+        private Response response = new();
+        private SessionRepository sessionRepository = new();
+        private ScoreboardRepository scoreboardRepository = new();
     
         public void GetScoreboard(StreamWriter writer, Request request)
         {
