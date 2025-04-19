@@ -11,6 +11,7 @@ namespace SEB.Services
         private StatsService statsService = new StatsService();
         private ScoreboardService scoreboardService = new ScoreboardService();
         private HistoryService historyService = new HistoryService();
+        private TournamentService tournamentService = new TournamentService();
 
         public void RouteRequest(StreamReader reader, StreamWriter writer)
         {
@@ -45,6 +46,10 @@ namespace SEB.Services
             else if(request.Method == "GET" && request.Path == "/history")
             {
                 historyService.GetHistory(writer, request);
+            }
+            else if(request.Method == "GET" && request.Path == "/tournament")
+            {
+                tournamentService.GetCurrentTournament(writer, request);
             }
         }
         public void ParseRequestLine(StreamReader reader, StreamWriter writer)
