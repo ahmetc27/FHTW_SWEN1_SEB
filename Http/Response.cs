@@ -1,4 +1,4 @@
-namespace SEB.Server
+namespace SEB.Http
 {
     public class Response
     {

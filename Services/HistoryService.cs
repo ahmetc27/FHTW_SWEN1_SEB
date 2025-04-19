@@ -1,7 +1,7 @@
 using System.Text.Json;
 using SEB.Models;
 using SEB.Repositories;
-using SEB.Server;
+using SEB.Http;
 
 namespace SEB.Services
 {

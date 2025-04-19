@@ -1,11 +1,10 @@
 using System.Text;
-using SEB.Server;
+using SEB.Services;
 
-namespace SEB.Services
+namespace SEB.Http
 {
     public class ServerService
     {
-        private Request request = new Request();
         private UserService userService = new UserService();
         private SessionService sessionsService = new SessionService();
         private StatsService statsService = new StatsService();
@@ -13,50 +12,13 @@ namespace SEB.Services
         private HistoryService historyService = new HistoryService();
         private TournamentService tournamentService = new TournamentService();
 
-        public void RouteRequest(StreamReader reader, StreamWriter writer)
+        public void ParseRequest(StreamReader reader, Request request)
         {
-            if(request.Method == "POST" && request.Path == "/users")
-            {
-                userService.PostUser(writer, request);
-            }
-            else if(request.Method == "POST" && request.Path == "/sessions")
-            {
-                sessionsService.PostSessions(writer, request);
-            }
-            else if(request.Method == "GET" && request.Path == "/users")
-            {
-                userService.GetAllUser(writer);
-            }
-            else if(request.Method == "GET" && request.Path.Contains("/users"))
-            {
-                userService.GetUser(writer, request);
-            }
-            else if(request.Method == "PUT" && request.Path.Contains("/users"))
-            {
-                userService.UpdateUser(writer, request);
-            }
-            else if(request.Method == "GET" && request.Path == "/stats")
-            {
-                statsService.GetStats(writer, request);
-            }
-            else if(request.Method == "GET" && request.Path == "/score")
-            {
-                scoreboardService.GetScoreboard(writer, request);
-            }
-            else if(request.Method == "GET" && request.Path == "/history")
-            {
-                historyService.GetHistory(writer, request);
-            }
-            else if(request.Method == "GET" && request.Path == "/tournament")
-            {
-                tournamentService.GetCurrentTournament(writer, request);
-            }
-            else if(request.Method == "POST" && request.Path == "/history")
-            {
-                historyService.AddHistoryEntry(writer, request);
-            }
+            ParseRequestLine(reader, request);
+            ParseHeaders(reader, request);
+            if(MethodHasBody(request)) ParseBody(reader, request);
         }
-        public void ParseRequestLine(StreamReader reader, StreamWriter writer)
+        public void ParseRequestLine(StreamReader reader, Request request)
         {
             string line = reader.ReadLine() ?? ""; // POST /users HTTP/1.1
 
@@ -67,7 +29,7 @@ namespace SEB.Services
 
             Console.WriteLine($"Method: {request.Method}, Path: {request.Path}");            
         }
-        public void ParseHeaders(StreamReader reader, StreamWriter writer)
+        public void ParseHeaders(StreamReader reader, Request request)
         {
             while(true)
             { 
@@ -86,7 +48,7 @@ namespace SEB.Services
                 }
             }
         }
-        public void ParseBody(StreamReader reader, StreamWriter writer)
+        public void ParseBody(StreamReader reader, Request request)
         {
             StringBuilder requestBody = new StringBuilder();
             if(request.ContentLength > 0)
@@ -107,7 +69,7 @@ namespace SEB.Services
             request.Body = requestBody.ToString();
             //Console.WriteLine($"Body: {request.Body}");
         }
-        public bool MethodHasBody()
+        public bool MethodHasBody(Request request)
         {
             return request.Method == "POST" || request.Method == "PUT";
         }

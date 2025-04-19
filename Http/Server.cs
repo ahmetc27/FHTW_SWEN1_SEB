@@ -2,16 +2,17 @@ using System.Net;
 using System.Net.Sockets;
 using SEB.Services;
 
-namespace SEB.Server
+namespace SEB.Http
 {
-    public class HttpServer
+    public class Server
     {
         private TcpListener tcpListener;
-        private readonly ServerService service;
-        public HttpServer(int port)
+        private readonly ServerService serverService = new();
+        private readonly Request request = new();
+        private readonly Router router = new();
+        public Server(int port)
         {
             tcpListener = new TcpListener(IPAddress.Any, port);
-            service = new ServerService();
         }
         public void Start()
         {
@@ -26,11 +27,8 @@ namespace SEB.Server
                 using StreamReader reader = new StreamReader(stream);
                 using StreamWriter writer = new StreamWriter(stream) { AutoFlush = true };
 
-                service.ParseRequestLine(reader, writer);
-                service.ParseHeaders(reader, writer);
-                if(service.MethodHasBody()) service.ParseBody(reader, writer);
-
-                service.RouteRequest(reader, writer);
+                serverService.ParseRequest(reader, request);
+                router.Route(writer, request);
             }
         }
     }

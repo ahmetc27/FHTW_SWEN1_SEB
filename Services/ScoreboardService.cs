@@ -1,6 +1,6 @@
 using System.Text.Json;
 using SEB.Repositories;
-using SEB.Server;
+using SEB.Http;
 
 namespace SEB.Services
 {

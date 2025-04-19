@@ -1,4 +1,4 @@
-﻿using SEB.Server;
+﻿using SEB.Http;
 
 namespace SEB
 {
@@ -7,7 +7,7 @@ namespace SEB
         public static void Main(string[] args)
         {
             int port = AppConfig.ServerPort;
-            HttpServer server = new HttpServer(port);
+            Http.Server server = new Http.Server(port);
             server.Start();
         }
     }
