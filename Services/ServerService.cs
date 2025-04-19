@@ -9,6 +9,7 @@ namespace SEB.Services
         private UserService userService = new UserService();
         private SessionService sessionsService = new SessionService();
         private StatsService statsService = new StatsService();
+        private ScoreboardService scoreboardService = new ScoreboardService();
 
         public void RouteRequest(StreamReader reader, StreamWriter writer)
         {
@@ -35,6 +36,10 @@ namespace SEB.Services
             else if(request.Method == "GET" && request.Path == "/stats")
             {
                 statsService.GetStats(writer, request);
+            }
+            else if(request.Method == "GET" && request.Path == "/score")
+            {
+                scoreboardService.GetScoreboard(writer, request);
             }
         }
         public void ParseRequestLine(StreamReader reader, StreamWriter writer)
