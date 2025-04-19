@@ -5,8 +5,14 @@ using SEB.Models;
 namespace SEB.Repositories
 {
 
-    public class ScoreboardRepository(string connectionString)
+    public class ScoreboardRepository
     {
+        private readonly string connectionString;
+
+        public ScoreboardRepository()
+        {
+            connectionString = AppConfig.ConnectionString;
+        }
         public static void AddParameterWithValue(IDbCommand command, string parameterName, DbType type, object value)
         {
             var parameter = command.CreateParameter();

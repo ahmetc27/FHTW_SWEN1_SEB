@@ -3,8 +3,14 @@ using Npgsql;
 
 namespace SEB.Repositories
 {
-    public class StatsRepository(string connectionString)
+    public class StatsRepository
     {
+        private readonly string connectionString;
+
+        public StatsRepository()
+        {
+            connectionString = AppConfig.ConnectionString;
+        }
         public static void AddParameterWithValue(IDbCommand command, string parameterName, DbType type, object value)
         {
             var parameter = command.CreateParameter();

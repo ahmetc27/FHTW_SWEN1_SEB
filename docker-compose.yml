@@ -1,0 +1,16 @@
+services:
+  db:
+    image: postgres:15
+    container_name: seb-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: seb
+    ports:
+      - "5432:5432"
+    volumes:
+      - pdgata:/var/lib/postgresql/data
+      - ./sql/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+
+volumes:
+  pdgata:

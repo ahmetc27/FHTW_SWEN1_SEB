@@ -5,8 +5,14 @@ using SEB.Models;
 namespace SEB.Repositories
 {
 
-    public class HistoryRepository(string connectionString)
+    public class HistoryRepository
     {
+        private readonly string connectionString;
+
+        public HistoryRepository()
+        {
+            connectionString = AppConfig.ConnectionString;
+        }
         public static void AddParameterWithValue(IDbCommand command, string parameterName, DbType type, object value)
         {
             var parameter = command.CreateParameter();

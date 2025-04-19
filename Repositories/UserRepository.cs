@@ -4,8 +4,14 @@ using Npgsql;
 
 namespace SEB.Repositories
 {
-    public class UserRepository(string connectionString)
+    public class UserRepository
     {
+        private readonly string connectionString;
+
+        public UserRepository()
+        {
+            connectionString = AppConfig.ConnectionString;
+        }
         public void Add(User user)
         {
             using IDbConnection connection = new NpgsqlConnection(connectionString);

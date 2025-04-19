@@ -7,8 +7,8 @@ namespace SEB.Services
 {
     public class SessionService
     {
-        private UserRepository userRepository = new UserRepository("Host=localhost;Username=postgres;Password=postgres;Database=postgres");
-        private SessionRepository sessionRepository = new SessionRepository("Host=localhost;Username=postgres;Password=postgres;Database=postgres");
+        private UserRepository userRepository = new UserRepository();
+        private SessionRepository sessionRepository = new SessionRepository();
         private Response response = new Response();
         public void PostSessions(StreamWriter writer, Request request)
         {

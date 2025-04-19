@@ -6,8 +6,8 @@ namespace SEB.Services
 {
     public class StatsService
     {
-        private SessionRepository sessionRepository = new SessionRepository("Host=localhost;Username=postgres;Password=postgres;Database=postgres");
-        private StatsRepository statsRepository = new StatsRepository("Host=localhost;Username=postgres;Password=postgres;Database=postgres");
+        private SessionRepository sessionRepository = new SessionRepository();
+        private StatsRepository statsRepository = new StatsRepository();
         public Response response = new Response();
         public void GetStats(StreamWriter writer, Request request)
         {

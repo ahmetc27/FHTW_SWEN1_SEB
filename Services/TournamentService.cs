@@ -6,8 +6,8 @@ namespace SEB.Services
 {
     public class TournamentService
     {
-        private TournamentRepository tournamentRepository = new TournamentRepository("Host=localhost;Username=postgres;Password=postgres;Database=postgres");
-        private SessionRepository sessionRepository = new SessionRepository("Host=localhost;Username=postgres;Password=postgres;Database=postgres");
+        private TournamentRepository tournamentRepository = new TournamentRepository();
+        private SessionRepository sessionRepository = new SessionRepository();
         private Response response = new Response();
         public void GetCurrentTournament(StreamWriter writer, Request request)
         {

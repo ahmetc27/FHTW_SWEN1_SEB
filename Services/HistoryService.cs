@@ -8,10 +8,10 @@ namespace SEB.Services
     public class HistoryService
     {
         private Response response = new Response();
-        private UserRepository userRepository = new UserRepository("Host=localhost;Username=postgres;Password=postgres;Database=postgres");
-        private HistoryRepository historyRepository = new HistoryRepository("Host=localhost;Username=postgres;Password=postgres;Database=postgres");
-        private SessionRepository sessionRepository = new SessionRepository("Host=localhost;Username=postgres;Password=postgres;Database=postgres");
-        private TournamentRepository tournamentRepository = new TournamentRepository("Host=localhost;Username=postgres;Password=postgres;Database=postgres");
+        private UserRepository userRepository = new UserRepository();
+        private HistoryRepository historyRepository = new HistoryRepository();
+        private SessionRepository sessionRepository = new SessionRepository();
+        private TournamentRepository tournamentRepository = new TournamentRepository();
     
         public void GetHistory(StreamWriter writer, Request request)
         {

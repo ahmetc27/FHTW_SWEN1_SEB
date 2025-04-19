@@ -7,8 +7,8 @@ namespace SEB.Services
     public class ScoreboardService
     {
         private Response response = new Response();
-        private SessionRepository sessionRepository = new SessionRepository("Host=localhost;Username=postgres;Password=postgres;Database=postgres");
-        private ScoreboardRepository scoreboardRepository = new ScoreboardRepository("Host=localhost;Username=postgres;Password=postgres;Database=postgres");
+        private SessionRepository sessionRepository = new SessionRepository();
+        private ScoreboardRepository scoreboardRepository = new ScoreboardRepository();
     
         public void GetScoreboard(StreamWriter writer, Request request)
         {

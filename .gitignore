@@ -7,3 +7,4 @@ obj/
 *.log
 appsettings.Development.json
 .vscode/
+config.json
