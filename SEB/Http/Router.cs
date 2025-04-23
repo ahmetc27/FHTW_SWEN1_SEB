@@ -5,10 +5,12 @@ using SEB.Interfaces;
 namespace SEB.Http;
 public class Router
 {
-    public IUserService _userService;
-    public Router(IUserService userService)
+    public IUserService userService;
+    public ISessionService sessionService;
+    public Router(IUserService userService, ISessionService sessionService)
     {
-        _userService = userService;
+        this.userService = userService;
+        this.sessionService = sessionService;
     }
 
     public void Route(Request request, StreamWriter writer)
@@ -19,12 +21,17 @@ public class Router
             {
                 case "POST":
                     //users
-                    if (request.Path == "/users")
+                    if(request.Path == "/users")
                     {
-                        UserController.Register(writer, request, _userService);
+                        UserController.Register(writer, request, userService);
                     }
 
                     //sessions
+                    if(request.Path == "/sessions")
+                    {
+                        SessionController.Login(writer, request, userService, sessionService);
+                    }
+
                     //history
                     break;
 
