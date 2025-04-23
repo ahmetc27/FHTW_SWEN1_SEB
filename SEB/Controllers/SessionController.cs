@@ -13,6 +13,9 @@ public static class SessionController
         User? user = JsonSerializer.Deserialize<User>(request.Body)!;
         User? dbUser = userService.ValidateUser(user)!;
         sessionService.CreateToken(dbUser);
+
+        
+
         string json = JsonSerializer.Serialize(dbUser);
         Logger.Success($"Token successfully created: {json}");
         Response.SendCreated(writer, json);

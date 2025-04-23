@@ -1,7 +1,6 @@
 using Npgsql;
 using SEB.Interfaces;
 using SEB.Models;
-using SEB.Utils;
 using System.Data;
 
 namespace SEB.Repositories;
@@ -21,17 +20,33 @@ public class UserRepository : BaseRepository, IUserRepository
         return reader.Read();
     }
 
-    public void AddUser(string username, string password)
+    public User? AddUser(string username, string password)
     {
         // add user (username, password) to database
         using IDbConnection connection = new NpgsqlConnection(connectionString);
         connection.Open();
         
         using IDbCommand command = connection.CreateCommand();
-        command.CommandText = "INSERT INTO users (username, password) VALUES (@username, @password)";
+        command.CommandText = "INSERT INTO users (username, password) VALUES (@username, @password) RETURNING *";
         AddParameterWithValue(command, "@username", DbType.String, username);
         AddParameterWithValue(command, "@password", DbType.String, password);
-        command.ExecuteNonQuery();
+
+        using IDataReader reader = command.ExecuteReader();
+        if(reader.Read())
+        {
+            User user = new User()
+            {
+                Id = reader.GetInt32(0),
+                Username = reader.GetString(1),
+                Password = reader.GetString(2),
+                Elo = reader.GetInt32(3),
+                Token = reader.IsDBNull(4) ? string.Empty : reader.GetString(4),
+                Bio = reader.IsDBNull(5) ? string.Empty : reader.GetString(5),
+                Image = reader.IsDBNull(6) ? string.Empty : reader.GetString(6)
+            };
+            return user;
+        }
+        return null;
     }
 
     public User? GetUser(string username, string password)

@@ -1,6 +1,7 @@
 using SEB.Utils;
 using SEB.Controller;
 using SEB.Interfaces;
+using SEB.Exceptions;
 
 namespace SEB.Http;
 public class Router
@@ -48,9 +49,24 @@ public class Router
                     break;
 
                 default:
-                    Response.SendNotFound(writer, "Endpoint not found");
-                    break;
+                    Logger.Error("Endpoint not found");
+                    throw new NotFoundException("Endpoint not found");
             }
+        }
+        catch(BadRequestException ex)
+        {
+            Logger.Error($"Bad request error: {ex.Message}");
+            Response.SendBadRequest(writer, ex.Message);
+        }
+        catch(UnauthorizedException ex)
+        {
+            Logger.Error($"Unauthorized error: {ex.Message}");
+            Response.SendUnauthorized(writer, ex.Message);
+        }
+        catch(NotFoundException ex)
+        {
+            Logger.Error($"Not found error: {ex.Message}");
+            Response.SendNotFound(writer, ex.Message);
         }
         catch(Exception ex)
         {

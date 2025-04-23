@@ -1,11 +1,12 @@
 using SEB.Utils;
 using System.Text;
 using SEB.Interfaces;
+using SEB.Exceptions;
 
 namespace SEB.Http;
 public class ServerService : IServerService
 {
-    private int _contentLength;
+    private int contentLength;
     public void ParseRequest(StreamReader reader, Request request)
     {
         ParseHeaders(reader, request);
@@ -13,9 +14,9 @@ public class ServerService : IServerService
     }
     public void ParseHeaders(StreamReader reader, Request request)
     {
-        string? line = string.Empty;
+        string? line;
         line = reader.ReadLine();
-        if (line is null) return;
+        if(line == null) throw new BadRequestException("Unexpected end of request");
         string[] parts = line.Split(' ');
         request.Method = parts[0];
         request.Path = parts[1];
@@ -34,7 +35,7 @@ public class ServerService : IServerService
 
                 if(key == "Content-Length")
                 {
-                    _contentLength = int.Parse(value);
+                    contentLength = int.Parse(value);
                 }
                 
                 Logger.Info($"Header: {key}: {value}");
@@ -44,14 +45,14 @@ public class ServerService : IServerService
 
     public void ParseBody(StreamReader reader, Request request)
     {
-        if(_contentLength > 0)
+        if(contentLength > 0)
         {
             StringBuilder sb = new StringBuilder();
             char[] buffer = new char[1024];
-            int bytesRead = 0;
+            int bytesRead;
             int bytesReadTotal = 0;
 
-            while(bytesReadTotal < _contentLength)
+            while(bytesReadTotal < contentLength)
             {
                 bytesRead = reader.Read(buffer, 0, buffer.Length);
 

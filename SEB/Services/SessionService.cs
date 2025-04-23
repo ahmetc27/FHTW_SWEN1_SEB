@@ -1,3 +1,4 @@
+using SEB.Exceptions;
 using SEB.Interfaces;
 using SEB.Models;
 
@@ -17,11 +18,8 @@ public class SessionService : ISessionService
         user.Token = $"{user.Username}-sebToken";
 
         // check if this token is already in db
-        if(!sessionRepository.ExistToken(user.Token))
-        {
-            sessionRepository.SaveToken(user.Username, user.Password, user.Token);
-        }        
-        else
-            throw new Exception("Token already exists");
+        if(sessionRepository.ExistToken(user.Token)) throw new UnauthorizedException("Token already exists");
+
+        sessionRepository.SaveToken(user.Username, user.Password, user.Token);            
     }
 }

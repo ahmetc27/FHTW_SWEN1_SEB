@@ -1,3 +1,4 @@
+using SEB.Exceptions;
 using SEB.Interfaces;
 using SEB.Models;
 using SEB.Utils;
@@ -11,31 +12,27 @@ public class UserService : IUserService
     {
         this.userRepository = userRepository;
     }
-    public void RegisterUser(User user)
+    public User? RegisterUser(User user)
     {
-        if(string.IsNullOrEmpty(user.Username) || string.IsNullOrEmpty(user.Password))
-            throw new ArgumentException("Username or password is empty");
+        if(string.IsNullOrWhiteSpace(user.Username)) throw new BadRequestException("Username is null or empty");
 
-        // check if username is taken already -> forward user repo
-        if(!userRepository.ExistUsername(user.Username))
-            userRepository.AddUser(user.Username, user.Password); // add user to database -> forward user repo
+        if(string.IsNullOrEmpty(user.Password)) throw new BadRequestException("Password is null or empty");
 
-        else
-            throw new ArgumentException("Username is already taken");
+        if(userRepository.ExistUsername(user.Username)) throw new BadRequestException("Username is already taken");
+
+        User? dbUser = userRepository.AddUser(user.Username, user.Password); // add user to database -> forward user repo
+        return dbUser;
     }
 
-    public User? ValidateUser(User user)
+    public User? ValidateUser(User user) // for token post /sessions
     {
-        if(user == null) 
-            throw new ArgumentNullException("User not found");
+        if(string.IsNullOrWhiteSpace(user.Username)) throw new BadRequestException("Username is null or empty");
 
-        if(string.IsNullOrEmpty(user.Username) || string.IsNullOrEmpty(user.Password))
-            throw new ArgumentException("Username or password is empty");
+        if(string.IsNullOrEmpty(user.Password)) throw new BadRequestException("Password is null or empty");
 
         User? dbUser = userRepository.GetUser(user.Username, user.Password);
 
-        if(dbUser == null)
-            throw new ArgumentException("Wrong credentials");
+        if(dbUser == null) throw new UnauthorizedException("User does not exist or wrong credentials");
 
         return dbUser;
     }
