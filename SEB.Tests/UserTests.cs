@@ -8,7 +8,7 @@ using System.Text.Json;
 
 namespace SEB.Tests;
 
-public class Tests
+public class UserTests
 {
     [SetUp]
     public void Setup()

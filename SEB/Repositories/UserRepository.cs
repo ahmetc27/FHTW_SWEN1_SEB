@@ -54,9 +54,9 @@ public class UserRepository : BaseRepository, IUserRepository
                 Username = reader.GetString(1),
                 Password = reader.GetString(2),
                 Elo = reader.GetInt32(3),
-                Token = reader.GetString(4),
-                Bio = reader.GetString(5),
-                Image = reader.GetString(6)
+                Token = reader.IsDBNull(4) ? string.Empty : reader.GetString(4),
+                Bio = reader.IsDBNull(5) ? string.Empty : reader.GetString(5),
+                Image = reader.IsDBNull(6) ? string.Empty : reader.GetString(6)
             };
             return user;
         }
