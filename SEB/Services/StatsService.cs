@@ -1,3 +1,4 @@
+using System.Collections;
 using SEB.Exceptions;
 using SEB.Interfaces;
 using SEB.Models;
@@ -40,5 +41,16 @@ public class StatsService : IStatsService
             OverallPushups = overallPushups
         };
         return stats;
+    }
+
+    public List<Stats> GetAllStatistics(string token)
+    {
+        if(string.IsNullOrWhiteSpace(token))
+            throw new BadRequestException("Token is missing or empty");
+
+        if(!sessionRepository.ExistToken(token))
+            throw new UnauthorizedException("Token does not exist");
+
+        //statsRepository. get all user stats
     }
 }

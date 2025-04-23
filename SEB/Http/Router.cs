@@ -48,29 +48,32 @@ public class Router
                     break;
 
                 case "GET":
-                    //users/test
-                    if(request.Path.StartsWith("/users"))
+                    if(request.Path.StartsWith("/users")) //users/test
                         UserController.GetUserByName(writer, request, userService);
 
-                    //stats
-                    else if(request.Path.StartsWith("/stats"))
+                    else if(request.Path.StartsWith("/stats")) //stats
                     {
                         if(request.Path != "/stats")
                             throw new BadRequestException("Invalid path. Expected GET /stats");
 
                         StatsController.GetStats(writer, request, statsService);
                     }
-
+                    
+                    else if(request.Path.StartsWith("/score")) //scoreboard
+                    {
+                        if(request.Path != "/score")
+                            throw new BadRequestException("Invalid path. Expected GET /score");
+                        
+                        StatsController.GetAllStats(writer, request, statsService);
+                    }
                     else
                         throw new BadRequestException("Invalid path");
-                    //scoreboard
                     //history
                     //tournament
                     break;
 
                 case "PUT":
-                    //users/test
-                    if(request.Path.StartsWith("/users"))
+                    if(request.Path.StartsWith("/users")) //users/test
                         UserController.UpdateUserProfile(writer, request, userService);
                     else
                         throw new BadRequestException("Invalid path");
