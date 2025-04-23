@@ -1,0 +1,9 @@
+curl -X POST http://localhost:10001/users -d "{\"Username\":\"test\", \"Password\":\"123\"}"
+
+curl -X POST http://localhost:10001/sessions -H "Content-Type: application/json" -d "{\"Username\":\"test\", \"Password\":\"123\"}"
+
+curl -X PUT http://localhost:10001/users/test -H "Authorization: Basic test-sebToken" -H "Content-Type: application/json" -d "{\"Bio\":\"I like football\", \"Image\":\":D\"}"
+
+curl -X GET http://localhost:10001/users/test -H "Authorization: Basic test-sebToken"
+
+curl -X GET http://localhost:10001/stats -H "Authorization: Basic test-sebToken"

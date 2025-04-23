@@ -51,6 +51,9 @@ public class StatsService : IStatsService
         if(!sessionRepository.ExistToken(token))
             throw new UnauthorizedException("Token does not exist");
 
+        List<Stats> scoreboard = new List<Stats>();
+
         //statsRepository. get all user stats
+        return scoreboard;
     }
 }

@@ -1,0 +1,40 @@
+### 1. Register user
+POST http://localhost:10001/users
+Content-Type: application/json
+
+{
+  "Username": "test",
+  "Password": "123"
+}
+
+### 2. Session login → Get token
+POST http://localhost:10001/sessions
+Content-Type: application/json
+
+{
+  "Username": "test",
+  "Password": "123"
+}
+
+### 3. GET user profile
+GET http://localhost:10001/users/test
+Authorization: Basic test-sebToken
+
+### 4. PUT profile update
+PUT http://localhost:10001/users/test
+Authorization: Basic test-sebToken
+Content-Type: application/json
+
+{
+  "Bio": "I like football",
+  "Image": ":D"
+}
+
+### 5. GET Stats
+GET http://localhost:10001/stats
+Authorization: Basic test-sebToken
+
+
+curl -X POST http://localhost:10001/users \
+-H "Content-Type: application/json" \
+-d "{\"Username\":\"test\", \"Password\":\"123\"}"
