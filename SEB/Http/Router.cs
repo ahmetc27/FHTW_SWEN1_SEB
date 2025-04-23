@@ -7,12 +7,14 @@ using System.Text.Json;
 namespace SEB.Http;
 public class Router
 {
-    public IUserService userService;
-    public ISessionService sessionService;
-    public Router(IUserService userService, ISessionService sessionService)
+    private readonly IUserService userService;
+    private readonly ISessionService sessionService;
+    private readonly IStatsService statsService;
+    public Router(IUserService userService, ISessionService sessionService, IStatsService statsService)
     {
         this.userService = userService;
         this.sessionService = sessionService;
+        this.statsService = statsService;
     }
 
     public void Route(Request request, StreamWriter writer)
@@ -42,16 +44,25 @@ public class Router
                     // else if
                     else
                         throw new BadRequestException("Invalid path");
-                        
+
                     break;
 
                 case "GET":
                     //users/test
                     if(request.Path.StartsWith("/users"))
                         UserController.GetUserByName(writer, request, userService);
+
+                    //stats
+                    else if(request.Path.StartsWith("/stats"))
+                    {
+                        if(request.Path != "/stats")
+                            throw new BadRequestException("Invalid path. Expected GET /stats");
+
+                        StatsController.GetStats(writer, request, statsService);
+                    }
+
                     else
                         throw new BadRequestException("Invalid path");
-                    //stats
                     //scoreboard
                     //history
                     //tournament

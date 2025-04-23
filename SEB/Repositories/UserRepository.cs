@@ -41,8 +41,9 @@ public class UserRepository : BaseRepository, IUserRepository
                 Password = reader.GetString(2),
                 Elo = reader.GetInt32(3),
                 Token = reader.IsDBNull(4) ? string.Empty : reader.GetString(4),
-                Bio = reader.IsDBNull(5) ? string.Empty : reader.GetString(5),
-                Image = reader.IsDBNull(6) ? string.Empty : reader.GetString(6)
+                Name = reader.IsDBNull(5) ? string.Empty : reader.GetString(5),
+                Bio = reader.IsDBNull(6) ? string.Empty : reader.GetString(6),
+                Image = reader.IsDBNull(7) ? string.Empty : reader.GetString(7)
             };
             return user;
         }
@@ -70,8 +71,9 @@ public class UserRepository : BaseRepository, IUserRepository
                 Password = reader.GetString(2),
                 Elo = reader.GetInt32(3),
                 Token = reader.IsDBNull(4) ? string.Empty : reader.GetString(4),
-                Bio = reader.IsDBNull(5) ? string.Empty : reader.GetString(5),
-                Image = reader.IsDBNull(6) ? string.Empty : reader.GetString(6)
+                Name = reader.IsDBNull(5) ? string.Empty : reader.GetString(5),
+                Bio = reader.IsDBNull(5) ? string.Empty : reader.GetString(6),
+                Image = reader.IsDBNull(7) ? string.Empty : reader.GetString(7)
             };
             return user;
         }
@@ -120,5 +122,22 @@ public class UserRepository : BaseRepository, IUserRepository
         AddParameterWithValue(command, "@image", DbType.String, user.Image);
 
         command.ExecuteNonQuery();
+    }
+
+    public int? GetIdByToken(string token)
+    {
+        using IDbConnection connection = new NpgsqlConnection(connectionString);
+        connection.Open();
+
+        using IDbCommand command = connection.CreateCommand();
+        command.CommandText = "SELECT id FROM users WHERE token=@token";
+        AddParameterWithValue(command, "@token", DbType.String, token);
+
+        using IDataReader reader = command.ExecuteReader();
+
+        if(reader.Read())
+            return reader.GetInt32(0);
+
+        return null;
     }
 }
