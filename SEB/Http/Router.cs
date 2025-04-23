@@ -70,7 +70,7 @@ public class Router
         }
         catch(Exception ex)
         {
-            Logger.Error(ex.Message);
+            Logger.Error($"An error ocurred: {ex.Message}");
             Response.SendBadRequest(writer, ex.Message);
         }
     }
