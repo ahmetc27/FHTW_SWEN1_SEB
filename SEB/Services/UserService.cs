@@ -54,7 +54,11 @@ public class UserService : IUserService
     public void CheckUserProfile(UserProfile requestUserProfile, User dbUser)
     {
         if(!string.IsNullOrWhiteSpace(requestUserProfile.Name))
+        {
+            if(userRepository.ExistUsername(requestUserProfile.Name))
+                throw new BadRequestException("Username already taken");
             dbUser.Username = requestUserProfile.Name;
+        }
         
         if(!string.IsNullOrWhiteSpace(requestUserProfile.Bio))
             dbUser.Bio = requestUserProfile.Bio;
