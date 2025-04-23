@@ -3,6 +3,7 @@ using SEB.Utils;
 using SEB.Http;
 using SEB.Interfaces;
 using System.Text.Json;
+using SEB.Exceptions;
 
 namespace SEB.Controller;
 
@@ -22,5 +23,27 @@ public static class UserController
 
         Logger.Success($"User created: {json}");
         Response.SendCreated(writer, json);
+    }
+
+    public static void GetUserByName(StreamWriter writer, Request request, IUserService userService)
+    {
+        string[] url = request.Path.Split('/');
+        if(url[1] != "users") throw new BadRequestException("Invalid path. Expected /users/{username}");
+        string username = url[2];
+
+        if(!request.Headers.ContainsKey("Authorization")) throw new UnauthorizedException("Header token required");
+        string? token = AuthHelper.GetTokenFromHeader(request.Headers)!;
+        
+        User? dbUser = userService.ValidateUserAccess(username, token);
+
+        var responseBody = new
+        {
+            message = "User profile retrieved successfully",
+            user = dbUser
+        };
+        string json = JsonSerializer.Serialize(responseBody);
+
+        Logger.Success($"User profile retrieved successfully: {json}");
+        Response.SendOk(writer, json);
     }
 }

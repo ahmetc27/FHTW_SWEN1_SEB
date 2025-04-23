@@ -14,25 +14,38 @@ public class UserService : IUserService
     }
     public User? RegisterUser(User user)
     {
-        if(string.IsNullOrWhiteSpace(user.Username)) throw new BadRequestException("Username is null or empty");
+        if(string.IsNullOrWhiteSpace(user.Username)) throw new BadRequestException("Username must not be empty");
 
-        if(string.IsNullOrEmpty(user.Password)) throw new BadRequestException("Password is null or empty");
+        if(string.IsNullOrEmpty(user.Password)) throw new BadRequestException("Password must not be empty");
 
         if(userRepository.ExistUsername(user.Username)) throw new BadRequestException("Username is already taken");
 
-        User? dbUser = userRepository.AddUser(user.Username, user.Password); // add user to database -> forward user repo
+        User? dbUser = userRepository.AddUser(user.Username, user.Password);
         return dbUser;
     }
 
     public User? ValidateUser(User user) // for token post /sessions
     {
-        if(string.IsNullOrWhiteSpace(user.Username)) throw new BadRequestException("Username is null or empty");
+        if(string.IsNullOrWhiteSpace(user.Username)) throw new BadRequestException("Username must not be empty");
 
-        if(string.IsNullOrEmpty(user.Password)) throw new BadRequestException("Password is null or empty");
+        if(string.IsNullOrEmpty(user.Password)) throw new BadRequestException("Password must not be empty");
 
         User? dbUser = userRepository.GetUser(user.Username, user.Password);
 
         if(dbUser == null) throw new UnauthorizedException("User does not exist or wrong credentials");
+
+        return dbUser;
+    }
+
+    public User? ValidateUserAccess(string username, string token)
+    {
+        if(string.IsNullOrWhiteSpace(username)) throw new BadRequestException("Username must not be empty");
+
+        if(string.IsNullOrWhiteSpace(token)) throw new BadRequestException("Authorization token is missing or empty");
+
+        User? dbUser = userRepository.GetUserByUsernameAndToken(username, token);
+
+        if(dbUser == null) throw new UnauthorizedException("Invalid username or token");
 
         return dbUser;
     }

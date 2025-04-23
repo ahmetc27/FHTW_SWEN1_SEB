@@ -2,6 +2,7 @@ using SEB.Utils;
 using SEB.Controller;
 using SEB.Interfaces;
 using SEB.Exceptions;
+using System.Text.Json;
 
 namespace SEB.Http;
 public class Router
@@ -23,21 +24,20 @@ public class Router
                 case "POST":
                     //users
                     if(request.Path == "/users")
-                    {
                         UserController.Register(writer, request, userService);
-                    }
 
                     //sessions
                     if(request.Path == "/sessions")
-                    {
                         SessionController.Login(writer, request, userService, sessionService);
-                    }
 
                     //history
                     break;
 
                 case "GET":
                     //users/test
+                    if(request.Path.Contains("/users"))
+                        UserController.GetUserByName(writer, request, userService);
+
                     //stats
                     //scoreboard
                     //history
@@ -68,10 +68,15 @@ public class Router
             Logger.Error($"Not found error: {ex.Message}");
             Response.SendNotFound(writer, ex.Message);
         }
+        catch(JsonException ex)
+        {
+            Logger.Error("Invalid JSON: " + ex.Message);
+            Response.SendBadRequest(writer, "Invalid JSON format");
+        }
         catch(Exception ex)
         {
             Logger.Error($"An error ocurred: {ex.Message}");
-            Response.SendBadRequest(writer, ex.Message);
+            Response.SendInternalServerError(writer, "An unexpected error occurred");
         }
     }
 }

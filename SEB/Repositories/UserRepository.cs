@@ -77,4 +77,32 @@ public class UserRepository : BaseRepository, IUserRepository
         }
         return null;
     }
+
+    public User? GetUserByUsernameAndToken(string username, string token)
+    {
+        using IDbConnection connection = new NpgsqlConnection(connectionString);
+        connection.Open();
+
+        using IDbCommand command = connection.CreateCommand();
+        command.CommandText = "SELECT * FROM users WHERE username=@username AND token=@token";
+        AddParameterWithValue(command, "@username", DbType.String, username);
+        AddParameterWithValue(command, "@token", DbType.String, token);
+
+        using IDataReader reader = command.ExecuteReader();
+        if(reader.Read())
+        {
+            User user = new User()
+            {
+                Id = reader.GetInt32(0),
+                Username = reader.GetString(1),
+                Password = reader.GetString(2),
+                Elo = reader.GetInt32(3),
+                Token = reader.IsDBNull(4) ? string.Empty : reader.GetString(4),
+                Bio = reader.IsDBNull(5) ? string.Empty : reader.GetString(5),
+                Image = reader.IsDBNull(6) ? string.Empty : reader.GetString(6)
+            };
+            return user;
+        }
+        return null;
+    }
 }
