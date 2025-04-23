@@ -15,7 +15,7 @@ public class Router
     {
         try
         {
-            switch (request.Method)
+            switch(request.Method)
             {
                 case "POST":
                     //users

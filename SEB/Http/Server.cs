@@ -26,7 +26,7 @@ public class Server
 
             var stream = client.GetStream();
             using var reader = new StreamReader(stream);
-            using var writer = new StreamWriter(stream);
+            using var writer = new StreamWriter(stream) { AutoFlush = true };
 
             var request = new Request();
                 
