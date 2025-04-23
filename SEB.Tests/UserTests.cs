@@ -29,7 +29,8 @@ public class UserTests
         };
         
         var mockUserService = new Mock<IUserService>();
-        mockUserService.Setup(us => us.RegisterUser(It.IsAny<User>()));
+        mockUserService.Setup(us => us.RegisterUser(It.IsAny<User>()))
+            .Returns(user);
 
         using var memoryStream = new MemoryStream();
         using var writer = new StreamWriter(memoryStream) { AutoFlush = true };

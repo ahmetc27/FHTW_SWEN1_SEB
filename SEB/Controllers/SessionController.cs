@@ -16,12 +16,12 @@ public static class SessionController
 
         var responseBody = new
         {
-            message = "User created successfuly",
+            message = "Session created successfully",
             user = dbUser
         };
         string json = JsonSerializer.Serialize(responseBody);
         
-        Logger.Success($"Token successfully created: {json}");
+        Logger.Success($"Session created successfully: {json}");
         Response.SendCreated(writer, json);
     }
 }

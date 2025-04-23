@@ -23,19 +23,29 @@ public class Router
             {
                 case "POST":
                     //users
-                    if(request.Path == "/users")
+                    if(request.Path.StartsWith("/users"))
+                    {
+                        if(request.Path != "/users")
+                            throw new BadRequestException("Invalid path. Expected POST /users");
+
                         UserController.Register(writer, request, userService);
+                    }
 
                     //sessions
-                    if(request.Path == "/sessions")
+                    if(request.Path.StartsWith("/sessions"))
+                    {
+                        if(request.Path != "/sessions")
+                            throw new BadRequestException("Invalid path. Expected POST /sessions");
+
                         SessionController.Login(writer, request, userService, sessionService);
+                    }
 
                     //history
                     break;
 
                 case "GET":
                     //users/test
-                    if(request.Path.Contains("/users"))
+                    if(request.Path.StartsWith("/users"))
                         UserController.GetUserByName(writer, request, userService);
 
                     //stats
