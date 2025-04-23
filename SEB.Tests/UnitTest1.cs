@@ -45,4 +45,26 @@ public class Tests
         Assert.That(response.Contains("testuser"), Is.True);
         mockUserService.Verify(us => us.RegisterUser(It.Is<User>(u => u.Username == "testuser")), Times.Once);
     }
+
+    [Test]
+    public void Register_DuplicateUser_ThrowsArgumentException()
+    {
+        // Arrange
+        var request = new Request
+        {
+            Body = "{\"Username\":\"testuser\", \"Password\":\"123\"}"
+        };
+
+        var mockUserService = new Mock<IUserService>();
+        mockUserService
+            .Setup(us => us.RegisterUser(It.Is<User>(u => u.Username == "testuser")))
+            .Throws(new ArgumentException("Username already taken"));
+
+        using var memoryStream = new MemoryStream();
+        using var writer = new StreamWriter(memoryStream) { AutoFlush = true };
+
+        // Act & Assert
+        Assert.Throws<ArgumentException>(() => 
+            UserController.Register(writer, request, mockUserService.Object));
+    }
 }
