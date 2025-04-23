@@ -105,4 +105,19 @@ public class UserRepository : BaseRepository, IUserRepository
         }
         return null;
     }
+
+    public void UpdateUserProfile(User user)
+    {
+        using IDbConnection connection = new NpgsqlConnection(connectionString);
+        connection.Open();
+
+        using IDbCommand command = connection.CreateCommand();
+        command.CommandText = "UPDATE users SET username=@username, bio=@bio, image=@image WHERE token=@token";
+        AddParameterWithValue(command, "@username", DbType.String, user.Username);
+        AddParameterWithValue(command, "@token", DbType.String, user.Token);
+        AddParameterWithValue(command, "@bio", DbType.String, user.Bio);
+        AddParameterWithValue(command, "@image", DbType.String, user.Image);
+
+        command.ExecuteNonQuery();
+    }
 }

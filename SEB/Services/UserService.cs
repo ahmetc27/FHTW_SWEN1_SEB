@@ -1,3 +1,4 @@
+using System.Text.Json;
 using SEB.Exceptions;
 using SEB.Interfaces;
 using SEB.Models;
@@ -48,5 +49,19 @@ public class UserService : IUserService
         if(dbUser == null) throw new UnauthorizedException("Invalid username or token");
 
         return dbUser;
+    }
+
+    public void CheckUserProfile(UserProfile requestUserProfile, User dbUser)
+    {
+        if(!string.IsNullOrWhiteSpace(requestUserProfile.Name))
+            dbUser.Username = requestUserProfile.Name;
+        
+        if(!string.IsNullOrWhiteSpace(requestUserProfile.Bio))
+            dbUser.Bio = requestUserProfile.Bio;
+        
+        if(!string.IsNullOrWhiteSpace(requestUserProfile.Image))
+            dbUser.Image = requestUserProfile.Image;
+            
+        userRepository.UpdateUserProfile(dbUser);
     }
 }

@@ -56,6 +56,8 @@ public class Router
 
                 case "PUT":
                     //users/test
+                    if(request.Path.StartsWith("/users"))
+                        UserController.UpdateUserProfile(writer, request, userService);
                     break;
 
                 default:
