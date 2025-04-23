@@ -55,9 +55,7 @@ public class UserService : IUserService
     {
         if(!string.IsNullOrWhiteSpace(requestUserProfile.Name))
         {
-            if(userRepository.ExistUsername(requestUserProfile.Name))
-                throw new BadRequestException("Username already taken");
-            dbUser.Username = requestUserProfile.Name;
+            dbUser.Name = requestUserProfile.Name;
         }
         
         if(!string.IsNullOrWhiteSpace(requestUserProfile.Bio))

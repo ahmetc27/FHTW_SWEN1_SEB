@@ -30,24 +30,27 @@ public class Router
 
                         UserController.Register(writer, request, userService);
                     }
-
                     //sessions
-                    if(request.Path.StartsWith("/sessions"))
+                    else if(request.Path.StartsWith("/sessions"))
                     {
                         if(request.Path != "/sessions")
                             throw new BadRequestException("Invalid path. Expected POST /sessions");
 
                         SessionController.Login(writer, request, userService, sessionService);
                     }
-
                     //history
+                    // else if
+                    else
+                        throw new BadRequestException("Invalid path");
+                        
                     break;
 
                 case "GET":
                     //users/test
                     if(request.Path.StartsWith("/users"))
                         UserController.GetUserByName(writer, request, userService);
-
+                    else
+                        throw new BadRequestException("Invalid path");
                     //stats
                     //scoreboard
                     //history
@@ -58,11 +61,13 @@ public class Router
                     //users/test
                     if(request.Path.StartsWith("/users"))
                         UserController.UpdateUserProfile(writer, request, userService);
+                    else
+                        throw new BadRequestException("Invalid path");
                     break;
 
                 default:
                     Logger.Error("Endpoint not found");
-                    throw new NotFoundException("Endpoint not found");
+                    throw new BadRequestException("Endpoint not found");
             }
         }
         catch(BadRequestException ex)

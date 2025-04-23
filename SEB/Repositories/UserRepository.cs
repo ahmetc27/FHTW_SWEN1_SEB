@@ -98,8 +98,9 @@ public class UserRepository : BaseRepository, IUserRepository
                 Password = reader.GetString(2),
                 Elo = reader.GetInt32(3),
                 Token = reader.IsDBNull(4) ? string.Empty : reader.GetString(4),
-                Bio = reader.IsDBNull(5) ? string.Empty : reader.GetString(5),
-                Image = reader.IsDBNull(6) ? string.Empty : reader.GetString(6)
+                Name = reader.IsDBNull(5) ? string.Empty : reader.GetString(5),
+                Bio = reader.IsDBNull(6) ? string.Empty : reader.GetString(6),
+                Image = reader.IsDBNull(7) ? string.Empty : reader.GetString(7)
             };
             return user;
         }
@@ -112,9 +113,9 @@ public class UserRepository : BaseRepository, IUserRepository
         connection.Open();
 
         using IDbCommand command = connection.CreateCommand();
-        command.CommandText = "UPDATE users SET username=@username, bio=@bio, image=@image WHERE token=@token";
-        AddParameterWithValue(command, "@username", DbType.String, user.Username);
+        command.CommandText = "UPDATE users SET name=@name, bio=@bio, image=@image WHERE token=@token";
         AddParameterWithValue(command, "@token", DbType.String, user.Token);
+        AddParameterWithValue(command, "@name", DbType.String, user.Name);
         AddParameterWithValue(command, "@bio", DbType.String, user.Bio);
         AddParameterWithValue(command, "@image", DbType.String, user.Image);
 
