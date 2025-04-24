@@ -9,5 +9,5 @@ public interface IUserRepository
     public User? GetUser(string username, string password);
     public User? GetUserByUsernameAndToken(string username, string token);
     public void UpdateUserProfile(User user);
-    public int? GetIdByToken(string token);
+    public int GetIdByToken(string token);
 }

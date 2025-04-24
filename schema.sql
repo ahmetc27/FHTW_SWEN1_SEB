@@ -12,6 +12,6 @@ CREATE TABLE users (
 CREATE TABLE history (
     id SERIAL PRIMARY KEY,
     user_id INT REFERENCES users(id),
-    count INT NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    count INT,
+    duration INT
 );

@@ -10,11 +10,13 @@ public class Router
     private readonly IUserService userService;
     private readonly ISessionService sessionService;
     private readonly IStatsService statsService;
-    public Router(IUserService userService, ISessionService sessionService, IStatsService statsService)
+    private readonly IHistoryService historyService;
+    public Router(IUserService userService, ISessionService sessionService, IStatsService statsService, IHistoryService historyService)
     {
         this.userService = userService;
         this.sessionService = sessionService;
         this.statsService = statsService;
+        this.historyService = historyService;
     }
 
     public void Route(Request request, StreamWriter writer)
@@ -66,9 +68,16 @@ public class Router
                         
                         StatsController.GetAllStats(writer, request, statsService);
                     }
+
+                    else if(request.Path.StartsWith("/history")) //history
+                    {
+                        if(request.Path != "/history")
+                            throw new BadRequestException("Invalid path. Expected GET /history");
+                        
+                        HistoryController.GetHistory(writer, request, historyService);
+                    }
                     else
                         throw new BadRequestException("Invalid path");
-                    //history
                     //tournament
                     break;
 
