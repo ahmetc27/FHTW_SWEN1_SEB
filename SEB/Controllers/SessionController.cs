@@ -14,7 +14,7 @@ public static class SessionController
     public static void Login(StreamWriter writer, Request request, IUserService userService, ISessionService sessionService)
     {
         UserCredentials? userCreds = JsonSerializer.Deserialize<UserCredentials>(request.Body)
-            ?? throw new BadRequestException("Invalid JSON body");
+            ?? throw new BadRequestException(ErrorMessages.InvalidJson);
 
         User dbUser = userService.AuthenticateUser(userCreds);
         sessionService.CreateToken(dbUser);

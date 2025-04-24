@@ -19,7 +19,7 @@ public class UserService : IUserService
         RequestHelper.ValidateCredentials(credentials.Password, "Password");
 
         if(userRepository.ExistUsername(credentials.Username))
-            throw new BadRequestException("Username is already taken");
+            throw new ConflictException(ErrorMessages.UsernameTaken);
 
         return userRepository.AddUser(credentials.Username, credentials.Password);
     }
@@ -30,7 +30,7 @@ public class UserService : IUserService
         RequestHelper.ValidateCredentials(credentials.Password, "Password");
 
         return userRepository.GetUser(credentials.Username, credentials.Password)
-            ?? throw new UnauthorizedException("User does not exist or wrong credentials");
+            ?? throw new UnauthorizedException(ErrorMessages.InvalidCredentials);
     }
 
     public User ValidateUserAccess(string username, string token)
@@ -39,7 +39,7 @@ public class UserService : IUserService
         RequestHelper.ValidateCredentials(token, "Token");
 
         return userRepository.GetUserByUsernameAndToken(username, token)
-            ?? throw new UnauthorizedException("Access denied: invalid username or token");
+            ?? throw new UnauthorizedException(ErrorMessages.InvalidUsernameOrToken);
     }
 
     public User UpdateUserProfile(string username, string token, UserProfile requestUserProfile)

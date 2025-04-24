@@ -21,16 +21,16 @@ public class HistoryService : IHistoryService
     public History GetUserHistoryData(string token)
     {
         if(string.IsNullOrWhiteSpace(token))
-            throw new BadRequestException("Token is missing or empty");
+            throw new BadRequestException(ErrorMessages.InvalidToken);
 
         if(!sessionRepository.ExistToken(token))
-            throw new UnauthorizedException("Token does not exist");
+            throw new UnauthorizedException(ErrorMessages.TokenNotFound);
         
         int? userId = userRepository.GetIdByToken(token)
-            ?? throw new BadRequestException("User Id invalid");
+            ?? throw new BadRequestException(ErrorMessages.UserIdNotFound);
 
         History history = historyRepository.GetHistoryByUserId(userId.Value)
-            ?? throw new BadRequestException("History invalid");            
+            ?? throw new BadRequestException(ErrorMessages.HistoryNotFound);            
         
         return history;
     }

@@ -57,6 +57,11 @@ public class Router
             Logger.Error($"Not found error: {ex.Message}");
             Response.SendNotFound(writer, ex.Message);
         }
+        catch(ConflictException ex)
+        {
+            Logger.Error($"Conflict error: {ex.Message}");
+            Response.SendNotFound(writer, ex.Message);
+        }
         catch(JsonException ex)
         {
             Logger.Error("Invalid JSON: " + ex.Message);

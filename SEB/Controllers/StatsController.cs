@@ -12,7 +12,7 @@ public static class StatsController
     public static void GetStats(StreamWriter writer, Request request, IStatsService statsService)
     {
         string token = RequestHelper.GetAuthToken(request)
-            ?? throw new UnauthorizedException("Invalid token");
+            ?? throw new UnauthorizedException(ErrorMessages.InvalidToken);
         
         Stats userStats = statsService.GetStatistics(token);
 
@@ -30,7 +30,7 @@ public static class StatsController
     public static void GetAllStats(StreamWriter writer, Request request, IStatsService statsService)
     {
         string token = RequestHelper.GetAuthToken(request)
-            ?? throw new UnauthorizedException("Invalid token");
+            ?? throw new UnauthorizedException(ErrorMessages.InvalidToken);
 
         List<Stats> scoreboard = statsService.GetAllStatistics(token);
 

@@ -22,10 +22,10 @@ public class StatsService : IStatsService
         RequestHelper.ValidateCredentials(token, "Token");
 
         if(!sessionRepository.ExistToken(token))
-            throw new UnauthorizedException("Token does not exist");
+            throw new UnauthorizedException(ErrorMessages.TokenNotFound);
 
         var userData = statsRepository.GetUserStatsByToken(token)
-            ?? throw new BadRequestException("Could not retrieve user stats");
+            ?? throw new BadRequestException(ErrorMessages.StatsNotFound);
 
         return new Stats
         {
@@ -40,7 +40,7 @@ public class StatsService : IStatsService
         RequestHelper.ValidateCredentials(token, "Token");
 
         if(!sessionRepository.ExistToken(token))
-            throw new UnauthorizedException("Token does not exist");
+            throw new UnauthorizedException(ErrorMessages.TokenNotFound);
 
         return statsRepository.GetAllStats();
     }
