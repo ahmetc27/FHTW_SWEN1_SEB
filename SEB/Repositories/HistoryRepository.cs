@@ -8,7 +8,7 @@ namespace SEB.Repositories;
 
 public class HistoryRepository : BaseRepository, IHistoryRepository
 {
-    public History? GetHistoryByUserId(int id)
+    public History? GetHistoryByUserId(int userid)
     {
         using IDbConnection connection = new NpgsqlConnection(connectionString);
         connection.Open();
@@ -16,9 +16,9 @@ public class HistoryRepository : BaseRepository, IHistoryRepository
         using IDbCommand command = connection.CreateCommand();
 
         command.CommandText =
-            "SELECT count, duration FROM history WHERE user_id = @id";
+            "SELECT count, duration FROM history WHERE user_id = @userid";
 
-        AddParameterWithValue(command, "@id", DbType.Int32, id);
+        AddParameterWithValue(command, "@userid", DbType.Int32, userid);
 
         IDataReader reader = command.ExecuteReader();
 
@@ -26,8 +26,8 @@ public class HistoryRepository : BaseRepository, IHistoryRepository
         {
             History history = new History()
             {
-                Count = reader.IsDBNull(2) ? 0 : reader.GetInt32(2),
-                Duration = reader.IsDBNull(3) ? 0 : reader.GetInt32(3)
+                Count = reader.IsDBNull(0) ? 0 : reader.GetInt32(0),
+                Duration = reader.IsDBNull(1) ? 0 : reader.GetInt32(1)
             };
             Logger.Info($"Count: {history.Count}, Duration: {history.Duration}");
             return history;

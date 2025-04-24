@@ -11,13 +11,20 @@ public static class UserController
 {
     public static void Register(StreamWriter writer, Request request, IUserService userService)
     {
-        User? user = JsonSerializer.Deserialize<User>(request.Body)!;
-        User? dbUser = userService.RegisterUser(user);
+        UserCredentials? userCreds = JsonSerializer.Deserialize<UserCredentials>(request.Body);
+
+        if(userCreds == null)
+        {
+            Logger.Error("Invalid request Body");
+            throw new BadRequestException("Invalid request body");
+        }
+
+        User createdUser = userService.RegisterUser(userCreds);
 
         var responseBody = new
         {
-            message = "User created successfuly",
-            user = dbUser
+            message = "User created successfully",
+            user = createdUser
         };
         string json = JsonSerializer.Serialize(responseBody);
 

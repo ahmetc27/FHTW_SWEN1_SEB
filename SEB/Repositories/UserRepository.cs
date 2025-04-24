@@ -20,23 +20,23 @@ public class UserRepository : BaseRepository, IUserRepository
         return reader.Read();
     }
 
-    public User? AddUser(string username, string password)
+    public User AddUser(string username, string password)
     {
         // add user (username, password) to database
         using IDbConnection connection = new NpgsqlConnection(connectionString);
         connection.Open();
         
         using IDbCommand command = connection.CreateCommand();
-        command.CommandText = "INSERT INTO users (username, password) VALUES (@username, @password) RETURNING *";
+        command.CommandText = "INSERT INTO users (username, password) VALUES (@username, @password) RETURNING id, username, password, elo, token, name, bio, image";
         AddParameterWithValue(command, "@username", DbType.String, username);
         AddParameterWithValue(command, "@password", DbType.String, password);
 
         using IDataReader reader = command.ExecuteReader();
         if(reader.Read())
         {
-            User user = new User()
+            return new User
             {
-                Id = reader.GetInt32(0),
+                UserId = reader.GetInt32(0),
                 Username = reader.GetString(1),
                 Password = reader.GetString(2),
                 Elo = reader.GetInt32(3),
@@ -45,9 +45,8 @@ public class UserRepository : BaseRepository, IUserRepository
                 Bio = reader.IsDBNull(6) ? string.Empty : reader.GetString(6),
                 Image = reader.IsDBNull(7) ? string.Empty : reader.GetString(7)
             };
-            return user;
         }
-        return null;
+        throw new Exception("Unexpected error: User could not be inserted into the database.");
     }
 
     public User? GetUser(string username, string password)
@@ -66,7 +65,7 @@ public class UserRepository : BaseRepository, IUserRepository
         {
             User user = new User()
             {
-                Id = reader.GetInt32(0),
+                UserId = reader.GetInt32(0),
                 Username = reader.GetString(1),
                 Password = reader.GetString(2),
                 Elo = reader.GetInt32(3),
@@ -95,7 +94,7 @@ public class UserRepository : BaseRepository, IUserRepository
         {
             User user = new User()
             {
-                Id = reader.GetInt32(0),
+                UserId = reader.GetInt32(0),
                 Username = reader.GetString(1),
                 Password = reader.GetString(2),
                 Elo = reader.GetInt32(3),

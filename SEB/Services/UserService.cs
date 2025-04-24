@@ -13,16 +13,29 @@ public class UserService : IUserService
     {
         this.userRepository = userRepository;
     }
-    public User? RegisterUser(User user)
+    public User RegisterUser(UserCredentials credentials)
     {
-        if(string.IsNullOrWhiteSpace(user.Username)) throw new BadRequestException("Username must not be empty");
+        ValidateCredentials(credentials.Username, "Username");
+        ValidateCredentials(credentials.Password, "Password");
 
-        if(string.IsNullOrEmpty(user.Password)) throw new BadRequestException("Password must not be empty");
+        if(userRepository.ExistUsername(credentials.Username))
+        {
+            Logger.Error($"Username already taken: {credentials.Username}");
+            throw new BadRequestException("Username is already taken");
+        }
 
-        if(userRepository.ExistUsername(user.Username)) throw new BadRequestException("Username is already taken");
+        User user = userRepository.AddUser(credentials.Username, credentials.Password);
 
-        User? dbUser = userRepository.AddUser(user.Username, user.Password);
-        return dbUser;
+        return new User
+        {
+            UserId = user.UserId,
+            Username = user.Username,
+            Password = user.Password,
+            Elo = user.Elo,
+            Name = user.Name,
+            Bio = user.Bio,
+            Image = user.Image
+        };
     }
 
     public User? ValidateUser(User user) // for token post /sessions
@@ -54,9 +67,7 @@ public class UserService : IUserService
     public void CheckUserProfile(UserProfile requestUserProfile, User dbUser)
     {
         if(!string.IsNullOrWhiteSpace(requestUserProfile.Name))
-        {
             dbUser.Name = requestUserProfile.Name;
-        }
         
         if(!string.IsNullOrWhiteSpace(requestUserProfile.Bio))
             dbUser.Bio = requestUserProfile.Bio;
@@ -65,5 +76,11 @@ public class UserService : IUserService
             dbUser.Image = requestUserProfile.Image;
             
         userRepository.UpdateUserProfile(dbUser);
+    }
+
+    private void ValidateCredentials(string value, string fieldName)
+    {
+        if(string.IsNullOrWhiteSpace(value))
+            throw new BadRequestException($"{fieldName} must not be empty");
     }
 }
