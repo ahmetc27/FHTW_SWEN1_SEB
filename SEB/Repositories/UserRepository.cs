@@ -122,7 +122,7 @@ public class UserRepository : BaseRepository, IUserRepository
         command.ExecuteNonQuery();
     }
 
-    public int GetIdByToken(string token)
+    public int? GetIdByToken(string token)
     {
         using IDbConnection connection = new NpgsqlConnection(connectionString);
         connection.Open();
@@ -136,6 +136,6 @@ public class UserRepository : BaseRepository, IUserRepository
         if(reader.Read())
             return reader.GetInt32(0);
 
-        return 0;
+        return null;
     }
 }

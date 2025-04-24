@@ -2,16 +2,16 @@ CREATE TABLE users (
 	id SERIAL PRIMARY KEY,
 	username VARCHAR(50) NOT NULL UNIQUE,
 	password VARCHAR(50) NOT NULL,
-	elo INT DEFAULT 100,
+	elo INT NOT NULL DEFAULT 100,
 	token VARCHAR(50) DEFAULT NULL,
 	name VARCHAR(50),
-	bio TEXT DEFAULT NULL,
-	image VARCHAR(50) DEFAULT NULL
+	bio TEXT NULL,
+	image VARCHAR(50)
 );
 
 CREATE TABLE history (
     id SERIAL PRIMARY KEY,
-    user_id INT REFERENCES users(id),
-    count INT,
-    duration INT
+    user_id INT NOT NULL REFERENCES users(id),
+    count INT NOT NULL,
+    duration INT NOT NULL
 );

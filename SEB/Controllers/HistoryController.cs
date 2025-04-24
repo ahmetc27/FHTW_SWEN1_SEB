@@ -11,7 +11,7 @@ public static class HistoryController
 {
     public static void GetHistory(StreamWriter writer, Request request, IHistoryService historyService)
     {
-        string? token = RequestHelper.GetAuthToken(request)
+        string token = RequestHelper.GetAuthToken(request)
             ?? throw new UnauthorizedException("Invalid token");
 
         History history = historyService.GetUserHistoryData(token);
@@ -29,7 +29,7 @@ public static class HistoryController
 
     public static void LogPushups(StreamWriter writer, Request request, IHistoryService historyService)
     {
-        string? token = RequestHelper.GetAuthToken(request)
+        string token = RequestHelper.GetAuthToken(request)
             ?? throw new UnauthorizedException("Invalid token");
     }
 }

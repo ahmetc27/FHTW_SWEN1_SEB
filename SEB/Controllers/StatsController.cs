@@ -11,7 +11,7 @@ public static class StatsController
 {
     public static void GetStats(StreamWriter writer, Request request, IStatsService statsService)
     {
-        string? token = RequestHelper.GetAuthToken(request)
+        string token = RequestHelper.GetAuthToken(request)
             ?? throw new UnauthorizedException("Invalid token");
         
         Stats userStats = statsService.GetUserStatistics(token);
@@ -24,12 +24,12 @@ public static class StatsController
         
         string json = JsonSerializer.Serialize(responseBody);
         Logger.Success($"User stats retrieved: {json}");
-        Response.SendOk(writer, json);        
+        Response.SendOk(writer, json);
     }
 
     public static void GetAllStats(StreamWriter writer, Request request, IStatsService statsService)
     {
-        string? token = RequestHelper.GetAuthToken(request)
+        string token = RequestHelper.GetAuthToken(request)
             ?? throw new UnauthorizedException("Invalid token");
 
         List<Stats> scoreboard = statsService.GetAllStatistics(token);

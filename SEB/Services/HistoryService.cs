@@ -26,12 +26,11 @@ public class HistoryService : IHistoryService
         if(!sessionRepository.ExistToken(token))
             throw new UnauthorizedException("Token does not exist");
         
-        int userId = userRepository.GetIdByToken(token);
+        int? userId = userRepository.GetIdByToken(token)
+            ?? throw new BadRequestException("User Id invalid");
 
-        History history = historyRepository.GetHistoryByUserId(userId)!;
-
-        if(history == null)
-            throw new BadRequestException("History is null");
+        History history = historyRepository.GetHistoryByUserId(userId.Value)
+            ?? throw new BadRequestException("History invalid");            
         
         return history;
     }

@@ -31,10 +31,10 @@ public static class UserController
 
     public static void GetUserProfile(StreamWriter writer, Request request, IUserService userService)
     {
-        string? username = RequestHelper.GetUsernameFromRequest(request) 
+        string username = RequestHelper.GetUsernameFromRequest(request) 
             ?? throw new BadRequestException("Username invalid in request line");
         
-        string? token = RequestHelper.GetAuthToken(request) 
+        string token = RequestHelper.GetAuthToken(request) 
             ?? throw new UnauthorizedException("Invalid token");
         
         User dbUser = userService.ValidateUserAccess(username, token);       
@@ -52,10 +52,10 @@ public static class UserController
 
     public static void UpdateUserProfile(StreamWriter writer, Request request, IUserService userService)
     {
-        string? username = RequestHelper.GetUsernameFromRequest(request)
+        string username = RequestHelper.GetUsernameFromRequest(request)
             ?? throw new BadRequestException("Username invalid in request line");
         
-        string? token = RequestHelper.GetAuthToken(request)
+        string token = RequestHelper.GetAuthToken(request)
             ?? throw new UnauthorizedException("Invalid token");
 
         User? dbUser = userService.ValidateUserAccess(username, token)!;

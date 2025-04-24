@@ -24,32 +24,20 @@ public class StatsService : IStatsService
         if(!sessionRepository.ExistToken(token))
             throw new UnauthorizedException("Token does not exist");
 
-        int? elo = statsRepository.GetEloByToken(token);
-        int? userId = userRepository.GetIdByToken(token);
+        var userData = statsRepository.GetUserStatsByToken(token)
+            ?? throw new BadRequestException("Could not retrieve user stats");
 
-        if(userId == null)
-            throw new UnauthorizedException("Invalid token");
-
-        int? overallPushups = statsRepository.GetTotalPushupsById(userId.Value);
-
-        if(elo == null)
-            throw new BadRequestException("Could not retrieve ELO");
-
-        if(overallPushups == null)
-            throw new BadRequestException("Could not retrieve push-up count");
-
-        Stats stats = new Stats()
+        return new Stats
         {
-            Elo = elo,
-            OverallPushups = overallPushups
+            Id = userData.userId,
+            Elo = userData.elo,
+            OverallPushups = userData.totalPushups
         };
-        return stats;
     }
 
     public List<Stats> GetAllStatistics(string token)
     {
-        if(string.IsNullOrWhiteSpace(token))
-            throw new BadRequestException("Token is missing or empty");
+        RequestHelper.ValidateCredentials(token, "Token");
 
         if(!sessionRepository.ExistToken(token))
             throw new UnauthorizedException("Token does not exist");

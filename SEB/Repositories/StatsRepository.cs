@@ -7,37 +7,45 @@ using System.Data;
 namespace SEB.Repositories;
 public class StatsRepository : BaseRepository, IStatsRepository
 {
-    public int? GetEloByToken(string token)
+    public (int userId, int elo, int totalPushups)? GetUserStatsByToken(string token)
     {
         using IDbConnection connection = new NpgsqlConnection(connectionString);
         connection.Open();
         
-        using IDbCommand command = connection.CreateCommand();
-        command.CommandText = "SELECT elo FROM users WHERE token=@token";
-        AddParameterWithValue(command, "@token", DbType.String, token);
+        int? userId = null;
+        int? elo = null;
 
-        using IDataReader reader = command.ExecuteReader();
-        if(reader.Read())
-            return reader.GetInt32(0);
+        using(IDbCommand command = connection.CreateCommand())
+        {
+            command.CommandText = "SELECT id, elo FROM users WHERE token=@token";
+            AddParameterWithValue(command, "@token", DbType.String, token);
 
-        return null;
-    }
+            using IDataReader reader = command.ExecuteReader();
+            if(reader.Read())
+            {
+                userId = reader.GetInt32(0);
+                elo = reader.GetInt32(1);
+            }
+        }
 
-    public int? GetTotalPushupsById(int userId)
-    {
-        using IDbConnection connection = new NpgsqlConnection(connectionString);
-        connection.Open();
-        
-        using IDbCommand command = connection.CreateCommand();
-        command.CommandText = "SELECT SUM(count) FROM history WHERE user_id=@userId";
-        AddParameterWithValue(command, "@userId", DbType.Int32, userId);
+        if(userId == null || elo == null) return null;
 
-        using IDataReader reader = command.ExecuteReader();
 
-        if(reader.Read() && !reader.IsDBNull(0))
-            return reader.GetInt32(0);
-        
-        return 0;
+        int totalPushups = 0;
+        using(IDbCommand command2 = connection.CreateCommand())
+        {
+            command2.CommandText = "SELECT SUM(count) FROM history WHERE user_id=@userId";
+            AddParameterWithValue(command2, "@userId", DbType.Int32, userId);
+
+            using IDataReader reader = command2.ExecuteReader();
+            if(reader.Read())
+            {
+                if(!reader.IsDBNull(0))
+                    totalPushups = reader.GetInt32(0);
+            }
+        }
+
+        return (userId.Value, elo.Value, totalPushups);
     }
 
     public List<Stats> GetAllStats()
@@ -60,7 +68,7 @@ public class StatsRepository : BaseRepository, IStatsRepository
         {
             Stats stats = new Stats()
             {
-                Username = reader.GetString(0),
+                Id = reader.GetInt32(0),
                 Elo = reader.GetInt32(1),
                 OverallPushups = reader.GetInt32(2)
             };

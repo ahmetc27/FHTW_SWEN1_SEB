@@ -4,8 +4,6 @@ namespace SEB.Interfaces;
 
 public interface IStatsRepository
 {
-    public int? GetEloByToken(string token);
-    public int? GetTotalPushupsById(int userId);
+    public (int userId, int elo, int totalPushups)? GetUserStatsByToken(string token);
     public List<Stats> GetAllStats();
-
 }
