@@ -107,8 +107,9 @@ public class UserRepository : BaseRepository, IUserRepository
         return null;
     }
 
-    public void UpdateUserProfile(User user)
+    public void Update(User user)
     {
+        // PUT users /test
         using IDbConnection connection = new NpgsqlConnection(connectionString);
         connection.Open();
 

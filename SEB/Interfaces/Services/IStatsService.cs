@@ -5,6 +5,6 @@ namespace SEB.Interfaces;
 
 public interface IStatsService
 {
-    public Stats GetUserStatistics(string token);
+    public Stats GetStatistics(string token);
     public List<Stats> GetAllStatistics(string token);
 }

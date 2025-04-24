@@ -52,27 +52,28 @@ public static class UserController
 
     public static void UpdateUserProfile(StreamWriter writer, Request request, IUserService userService)
     {
+        // 1. Validate HTTP-level inputs (fail fast)
         string username = RequestHelper.GetUsernameFromRequest(request)
             ?? throw new BadRequestException("Username invalid in request line");
         
         string token = RequestHelper.GetAuthToken(request)
             ?? throw new UnauthorizedException("Invalid token");
 
-        User? dbUser = userService.ValidateUserAccess(username, token)!;
+        // 2. Deserialize and validate request body
+        UserProfile requestUserProfile = JsonSerializer.Deserialize<UserProfile>(request.Body)
+            ?? throw new BadRequestException("Invalid JSON");
 
-        UserProfile? requestUserProfile = JsonSerializer.Deserialize<UserProfile>(request.Body)
-            ?? throw new BadRequestException("Invalid JSON body");
+        // 3. Let the service handle the rest (business logic + persistence)
+        User updatedUser = userService.UpdateUserProfile(username, token, requestUserProfile);
 
-        userService.CheckUserProfile(requestUserProfile, dbUser);
-
+        // 4. Return response
         var responseBody = new
         {
             message = "User profile updated successfully",
-            user = UserMapper.ToUserResponse(dbUser)
+            user = UserMapper.ToUserResponse(updatedUser)
         };
-        string json = JsonSerializer.Serialize(responseBody);
 
-        Logger.Success($"User profile updated: {json}");
-        Response.SendOk(writer, json);
+        Logger.Success($"Profile updated: {JsonSerializer.Serialize(responseBody)}");
+        Response.SendOk(writer, JsonSerializer.Serialize(responseBody));
     }
 }

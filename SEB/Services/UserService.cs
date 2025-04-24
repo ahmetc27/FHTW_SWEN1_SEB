@@ -29,10 +29,8 @@ public class UserService : IUserService
         RequestHelper.ValidateCredentials(credentials.Username, "Username");
         RequestHelper.ValidateCredentials(credentials.Password, "Password");
 
-        User? user = userRepository.GetUser(credentials.Username, credentials.Password)
+        return userRepository.GetUser(credentials.Username, credentials.Password)
             ?? throw new UnauthorizedException("User does not exist or wrong credentials");
-
-        return user;
     }
 
     public User ValidateUserAccess(string username, string token)
@@ -40,14 +38,16 @@ public class UserService : IUserService
         RequestHelper.ValidateCredentials(username, "Username");
         RequestHelper.ValidateCredentials(token, "Token");
 
-        User? dbUser = userRepository.GetUserByUsernameAndToken(username, token)
+        return userRepository.GetUserByUsernameAndToken(username, token)
             ?? throw new UnauthorizedException("Access denied: invalid username or token");
-
-        return dbUser;
     }
 
-    public void CheckUserProfile(UserProfile requestUserProfile, User dbUser)
+    public User UpdateUserProfile(string username, string token, UserProfile requestUserProfile)
     {
+        // 1. Validate user access (throws if invalid)
+        User dbUser = ValidateUserAccess(username, token);
+
+        // 2. Apply updates (with validation if needed)
         if(!string.IsNullOrWhiteSpace(requestUserProfile.Name))
             dbUser.Name = requestUserProfile.Name;
         
@@ -56,7 +56,10 @@ public class UserService : IUserService
         
         if(!string.IsNullOrWhiteSpace(requestUserProfile.Image))
             dbUser.Image = requestUserProfile.Image;
-            
-        userRepository.UpdateUserProfile(dbUser);
+        
+        // 3. Persist changes
+        userRepository.Update(dbUser);
+
+        return dbUser;
     }
 }

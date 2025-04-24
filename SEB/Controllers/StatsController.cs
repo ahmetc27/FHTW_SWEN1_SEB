@@ -14,7 +14,7 @@ public static class StatsController
         string token = RequestHelper.GetAuthToken(request)
             ?? throw new UnauthorizedException("Invalid token");
         
-        Stats userStats = statsService.GetUserStatistics(token);
+        Stats userStats = statsService.GetStatistics(token);
 
         var responseBody = new
         {

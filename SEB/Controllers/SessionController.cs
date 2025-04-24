@@ -17,7 +17,6 @@ public static class SessionController
             ?? throw new BadRequestException("Invalid JSON body");
 
         User dbUser = userService.AuthenticateUser(userCreds);
-
         sessionService.CreateToken(dbUser);
 
         var responseBody = new

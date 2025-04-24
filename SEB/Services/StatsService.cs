@@ -17,7 +17,7 @@ public class StatsService : IStatsService
         this.sessionRepository = sessionRepository;        
         this.statsRepository = statsRepository;
     }
-    public Stats GetUserStatistics(string token)
+    public Stats GetStatistics(string token)
     {
         RequestHelper.ValidateCredentials(token, "Token");
 
@@ -42,7 +42,6 @@ public class StatsService : IStatsService
         if(!sessionRepository.ExistToken(token))
             throw new UnauthorizedException("Token does not exist");
 
-        List<Stats> scoreboard = statsRepository.GetAllStats();
-        return scoreboard;
+        return statsRepository.GetAllStats();
     }
 }

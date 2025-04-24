@@ -8,6 +8,6 @@ public interface IUserRepository
     public User AddUser(string username, string password);
     public User? GetUser(string username, string password);
     public User? GetUserByUsernameAndToken(string username, string token);
-    public void UpdateUserProfile(User user);
+    public void Update(User user);
     public int? GetIdByToken(string token);
 }
