@@ -26,66 +26,15 @@ public class Router
             switch(request.Method)
             {
                 case "POST":
-                    //users
-                    if(request.Path.StartsWith("/users"))
-                    {
-                        if(request.Path != "/users")
-                            throw new BadRequestException("Invalid path. Expected POST /users");
-
-                        UserController.Register(writer, request, userService);
-                    }
-                    //sessions
-                    else if(request.Path.StartsWith("/sessions"))
-                    {
-                        if(request.Path != "/sessions")
-                            throw new BadRequestException("Invalid path. Expected POST /sessions");
-
-                        SessionController.Login(writer, request, userService, sessionService);
-                    }
-                    //history
-                    // else if
-                    else
-                        throw new BadRequestException("Invalid path");
-
+                    HandlePost(request, writer);
                     break;
 
                 case "GET":
-                    if(request.Path.StartsWith("/users")) //users/test
-                        UserController.GetUserByName(writer, request, userService);
-
-                    else if(request.Path.StartsWith("/stats")) //stats
-                    {
-                        if(request.Path != "/stats")
-                            throw new BadRequestException("Invalid path. Expected GET /stats");
-
-                        StatsController.GetStats(writer, request, statsService);
-                    }
-                    
-                    else if(request.Path.StartsWith("/score")) //scoreboard
-                    {
-                        if(request.Path != "/score")
-                            throw new BadRequestException("Invalid path. Expected GET /score");
-                        
-                        StatsController.GetAllStats(writer, request, statsService);
-                    }
-
-                    else if(request.Path.StartsWith("/history")) //history
-                    {
-                        if(request.Path != "/history")
-                            throw new BadRequestException("Invalid path. Expected GET /history");
-                        
-                        HistoryController.GetHistory(writer, request, historyService);
-                    }
-                    else
-                        throw new BadRequestException("Invalid path");
-                    //tournament
+                    HandleGet(request, writer);
                     break;
 
                 case "PUT":
-                    if(request.Path.StartsWith("/users")) //users/test
-                        UserController.UpdateUserProfile(writer, request, userService);
-                    else
-                        throw new BadRequestException("Invalid path");
+                    HandlePut(request, writer);
                     break;
 
                 default:
@@ -118,5 +67,49 @@ public class Router
             Logger.Error($"An error ocurred: {ex.Message}");
             Response.SendInternalServerError(writer, "An unexpected error occurred");
         }
+    }
+
+    private void HandlePost(Request request, StreamWriter writer)
+    {        
+        if(request.Path == "/users") //users
+            UserController.Register(writer, request, userService);
+        
+        else if(request.Path == "/sessions") //sessions
+            SessionController.Login(writer, request, userService, sessionService);
+        
+        else if(request.Path == "/history") //history
+            HistoryController.GetHistory(writer, request, historyService);
+
+        else
+            throw new BadRequestException("Invalid path");
+    }
+
+    private void HandleGet(Request request, StreamWriter writer)
+    {
+        if(request.Path.StartsWith("/users")) //users/test
+            UserController.GetUserByName(writer, request, userService);
+
+        else if(request.Path == "/stats") //stats
+            StatsController.GetStats(writer, request, statsService);
+        
+        else if(request.Path == "/score") //scoreboard
+            StatsController.GetAllStats(writer, request, statsService);
+
+        else if(request.Path == "/history") //history
+            HistoryController.GetHistory(writer, request, historyService);
+        
+        //else if(request.Path == "/tournament") //tournament
+            // TournamentController
+        else
+            throw new BadRequestException("Invalid path");
+    }
+
+    private void HandlePut(Request request, StreamWriter writer)
+    {
+        if(request.Path.StartsWith("/users")) //users/test
+            UserController.UpdateUserProfile(writer, request, userService);
+            
+        else
+            throw new BadRequestException("Invalid path");
     }
 }
