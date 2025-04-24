@@ -1,6 +1,5 @@
 using System.Data;
 using Npgsql;
-using SEB.Utils;
 
 namespace SEB.Repositories;
 
