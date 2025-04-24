@@ -16,7 +16,7 @@ public static class StatsController
             throw new UnauthorizedException("Header token required");
         string? token = AuthHelper.GetTokenFromHeader(request.Headers)!;
 
-        Stats? userStats = statsService.GetUserStatistics(token);
+        Stats userStats = statsService.GetUserStatistics(token);
 
         var responseBody = new
         {
@@ -40,7 +40,7 @@ public static class StatsController
         var responseBody = new
         {
             message = "Scoreboard retrieved successfully",
-            scoreboard = scoreboard
+            scoreboard
         };
         
         string json = JsonSerializer.Serialize(responseBody);

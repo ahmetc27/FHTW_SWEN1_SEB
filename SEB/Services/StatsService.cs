@@ -32,8 +32,11 @@ public class StatsService : IStatsService
 
         int? overallPushups = statsRepository.GetTotalPushupsById(userId.Value);
 
-        if(elo == null || overallPushups == null)
-            throw new BadRequestException("Could not retrieve stats");
+        if(elo == null)
+            throw new BadRequestException("Could not retrieve ELO");
+
+        if(overallPushups == null)
+            throw new BadRequestException("Could not retrieve push-up count");
 
         Stats stats = new Stats()
         {
@@ -51,9 +54,7 @@ public class StatsService : IStatsService
         if(!sessionRepository.ExistToken(token))
             throw new UnauthorizedException("Token does not exist");
 
-        List<Stats> scoreboard = new List<Stats>();
-
-        //statsRepository. get all user stats
+        List<Stats> scoreboard = statsRepository.GetAllStats();
         return scoreboard;
     }
 }

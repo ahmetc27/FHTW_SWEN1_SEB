@@ -1,6 +1,7 @@
 using Npgsql;
 using SEB.Interfaces;
 using SEB.Models;
+using SEB.Utils;
 using System.Data;
 
 namespace SEB.Repositories;
@@ -37,5 +38,34 @@ public class StatsRepository : BaseRepository, IStatsRepository
             return reader.GetInt32(0);
         
         return 0;
+    }
+
+    public List<Stats> GetAllStats()
+    {
+        using IDbConnection connection = new NpgsqlConnection(connectionString);
+        connection.Open();
+        
+        using IDbCommand command = connection.CreateCommand();
+        command.CommandText =
+            "SELECT u.username, u.elo, COALESCE(SUM(h.count), 0) AS totalPushups " +
+            "FROM users u " +
+            "LEFT JOIN history h ON u.id = h.user_id " +
+            "GROUP BY u.id";
+
+        using IDataReader reader = command.ExecuteReader();
+
+        List<Stats> scoreboard = new();
+        
+        while(reader.Read())
+        {
+            Stats stats = new Stats()
+            {
+                Username = reader.GetString(0),
+                Elo = reader.GetInt32(1),
+                OverallPushups = reader.GetInt32(2)
+            };
+            scoreboard.Add(stats);
+        }
+        return scoreboard;
     }
 }
