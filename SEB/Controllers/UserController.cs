@@ -1,9 +1,11 @@
 using SEB.Models;
+using SEB.DTOs;
 using SEB.Utils;
 using SEB.Http;
 using SEB.Interfaces;
 using System.Text.Json;
 using SEB.Exceptions;
+using SEB.Mappers;
 
 namespace SEB.Controller;
 
@@ -14,17 +16,14 @@ public static class UserController
         UserCredentials? userCreds = JsonSerializer.Deserialize<UserCredentials>(request.Body);
 
         if(userCreds == null)
-        {
-            Logger.Error("Invalid request Body");
-            throw new BadRequestException("Invalid request body");
-        }
+            throw new BadRequestException("Invalid JSON body");
 
         User createdUser = userService.RegisterUser(userCreds);
 
         var responseBody = new
         {
             message = "User created successfully",
-            user = createdUser
+            user = UserMapper.ToUserResponse(createdUser)
         };
         string json = JsonSerializer.Serialize(responseBody);
 
@@ -32,19 +31,24 @@ public static class UserController
         Response.SendCreated(writer, json);
     }
 
-    public static void GetUserByName(StreamWriter writer, Request request, IUserService userService)
+    public static void GetUserProfile(StreamWriter writer, Request request, IUserService userService)
     {
-        string? username = GetUsernameFromRequest(request)!;
+        string? username = RequestHelper.GetUsernameFromRequest(request);
 
-        if(!request.Headers.ContainsKey("Authorization")) throw new UnauthorizedException("Header token required");
-        string? token = AuthHelper.GetTokenFromHeader(request.Headers)!;
+        if(username == null)
+            throw new BadRequestException("Username invalid in request line");
         
-        User? dbUser = userService.ValidateUserAccess(username, token);
+        string? token = RequestHelper.GetAuthToken(request);
+
+        if(token == null)
+            throw new UnauthorizedException("Invalid token");
+        
+        User dbUser = userService.ValidateUserAccess(username, token);       
 
         var responseBody = new
         {
             message = "User profile retrieved successfully",
-            user = dbUser
+            user = UserMapper.ToUserResponse(dbUser)
         };
         string json = JsonSerializer.Serialize(responseBody);
 
@@ -54,10 +58,15 @@ public static class UserController
 
     public static void UpdateUserProfile(StreamWriter writer, Request request, IUserService userService)
     {
-        string? username = GetUsernameFromRequest(request)!;
+        string? username = RequestHelper.GetUsernameFromRequest(request);
 
-        if(!request.Headers.ContainsKey("Authorization")) throw new UnauthorizedException("Header token required");
-        string? token = AuthHelper.GetTokenFromHeader(request.Headers)!;
+        if(username == null)
+            throw new BadRequestException("Username invalid in request line");
+        
+        string? token = RequestHelper.GetAuthToken(request);
+
+        if(token == null)
+            throw new UnauthorizedException("Invalid token");
 
         User? dbUser = userService.ValidateUserAccess(username, token)!;
 
@@ -68,18 +77,11 @@ public static class UserController
         var responseBody = new
         {
             message = "User profile updated successfully",
-            user = dbUser
+            user = UserMapper.ToUserResponse(dbUser)
         };
         string json = JsonSerializer.Serialize(responseBody);
 
         Logger.Success($"User profile updated: {json}");
         Response.SendOk(writer, json);
-    }
-
-    private static string? GetUsernameFromRequest(Request request)
-    {
-        string[] url = request.Path.Split('/');
-        if(url[1] != "users") throw new BadRequestException("Invalid path. Expected /users/{username}");
-        return url[2];
     }
 }

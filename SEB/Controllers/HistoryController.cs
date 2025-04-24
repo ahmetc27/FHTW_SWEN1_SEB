@@ -12,7 +12,10 @@ public static class HistoryController
     public static void GetHistory(StreamWriter writer, Request request, IHistoryService historyService)
     {
         if(!request.Headers.ContainsKey("Authorization"))
+        {
+            Logger.Error("Header token required");
             throw new UnauthorizedException("Header token required");
+        }
         string? token = AuthHelper.GetTokenFromHeader(request.Headers)!;
 
         History history = historyService.GetUserHistoryData(token);
@@ -26,5 +29,15 @@ public static class HistoryController
         
         Logger.Success($"History retrieved successfully: {json}");
         Response.SendCreated(writer, json);
+    }
+
+    public static void LogPushups(StreamWriter writer, Request request, IHistoryService historyService)
+    {
+        if(!request.Headers.ContainsKey("Authorization"))
+        {
+            Logger.Error("Header token required");
+            throw new UnauthorizedException("Header token required");
+        }
+        string? token = AuthHelper.GetTokenFromHeader(request.Headers)!;
     }
 }

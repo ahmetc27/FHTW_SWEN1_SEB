@@ -63,7 +63,7 @@ public class UserRepository : BaseRepository, IUserRepository
         using IDataReader reader = command.ExecuteReader();
         if(reader.Read())
         {
-            User user = new User()
+            return new User
             {
                 UserId = reader.GetInt32(0),
                 Username = reader.GetString(1),
@@ -71,10 +71,9 @@ public class UserRepository : BaseRepository, IUserRepository
                 Elo = reader.GetInt32(3),
                 Token = reader.IsDBNull(4) ? string.Empty : reader.GetString(4),
                 Name = reader.IsDBNull(5) ? string.Empty : reader.GetString(5),
-                Bio = reader.IsDBNull(5) ? string.Empty : reader.GetString(6),
+                Bio = reader.IsDBNull(6) ? string.Empty : reader.GetString(6),
                 Image = reader.IsDBNull(7) ? string.Empty : reader.GetString(7)
             };
-            return user;
         }
         return null;
     }

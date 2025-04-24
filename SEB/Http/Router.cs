@@ -78,7 +78,7 @@ public class Router
             SessionController.Login(writer, request, userService, sessionService);
         
         else if(request.Path == "/history") //history
-            HistoryController.GetHistory(writer, request, historyService);
+            HistoryController.LogPushups(writer, request, historyService);
 
         else
             throw new BadRequestException("Invalid path");
@@ -87,7 +87,7 @@ public class Router
     private void HandleGet(Request request, StreamWriter writer)
     {
         if(request.Path.StartsWith("/users")) //users/test
-            UserController.GetUserByName(writer, request, userService);
+            UserController.GetUserProfile(writer, request, userService);
 
         else if(request.Path == "/stats") //stats
             StatsController.GetStats(writer, request, statsService);
@@ -108,7 +108,7 @@ public class Router
     {
         if(request.Path.StartsWith("/users")) //users/test
             UserController.UpdateUserProfile(writer, request, userService);
-            
+
         else
             throw new BadRequestException("Invalid path");
     }

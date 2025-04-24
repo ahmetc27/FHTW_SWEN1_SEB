@@ -1,4 +1,4 @@
-using System.Text.Json;
+using SEB.DTOs;
 using SEB.Exceptions;
 using SEB.Interfaces;
 using SEB.Models;
@@ -24,42 +24,37 @@ public class UserService : IUserService
             throw new BadRequestException("Username is already taken");
         }
 
-        User user = userRepository.AddUser(credentials.Username, credentials.Password);
+        return userRepository.AddUser(credentials.Username, credentials.Password);
+    }
 
-        return new User
+    public User AuthenticateUser(UserCredentials credentials) // for token post /sessions
+    {
+        ValidateCredentials(credentials.Username, "Username");
+        ValidateCredentials(credentials.Password, "Password");
+
+        User? user = userRepository.GetUser(credentials.Username, credentials.Password);
+
+        if(user == null)
         {
-            UserId = user.UserId,
-            Username = user.Username,
-            Password = user.Password,
-            Elo = user.Elo,
-            Name = user.Name,
-            Bio = user.Bio,
-            Image = user.Image
-        };
+            Logger.Error("User does not exist or wrong credentials");
+            throw new UnauthorizedException("User does not exist or wrong credentials");
+        }
+
+        return user;
     }
 
-    public User? ValidateUser(User user) // for token post /sessions
+    public User ValidateUserAccess(string username, string token)
     {
-        if(string.IsNullOrWhiteSpace(user.Username)) throw new BadRequestException("Username must not be empty");
-
-        if(string.IsNullOrEmpty(user.Password)) throw new BadRequestException("Password must not be empty");
-
-        User? dbUser = userRepository.GetUser(user.Username, user.Password);
-
-        if(dbUser == null) throw new UnauthorizedException("User does not exist or wrong credentials");
-
-        return dbUser;
-    }
-
-    public User? ValidateUserAccess(string username, string token)
-    {
-        if(string.IsNullOrWhiteSpace(username)) throw new BadRequestException("Username must not be empty");
-
-        if(string.IsNullOrWhiteSpace(token)) throw new BadRequestException("Authorization token is missing or empty");
+        ValidateCredentials(username, "Username");
+        ValidateCredentials(token, "Token");
 
         User? dbUser = userRepository.GetUserByUsernameAndToken(username, token);
 
-        if(dbUser == null) throw new UnauthorizedException("Invalid username or token");
+        if(dbUser == null)
+        {
+            Logger.Error("Access denied: invalid username or token");
+            throw new UnauthorizedException("Access denied: invalid username or token");
+        }
 
         return dbUser;
     }
@@ -81,6 +76,9 @@ public class UserService : IUserService
     private void ValidateCredentials(string value, string fieldName)
     {
         if(string.IsNullOrWhiteSpace(value))
-            throw new BadRequestException($"{fieldName} must not be empty");
+        {
+            Logger.Error($"{fieldName} invalid");
+            throw new BadRequestException($"{fieldName} invalid");
+        }
     }
 }
