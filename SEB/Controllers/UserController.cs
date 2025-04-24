@@ -13,10 +13,8 @@ public static class UserController
 {
     public static void Register(StreamWriter writer, Request request, IUserService userService)
     {
-        UserCredentials? userCreds = JsonSerializer.Deserialize<UserCredentials>(request.Body);
-
-        if(userCreds == null)
-            throw new BadRequestException("Invalid JSON body");
+        UserCredentials? userCreds = JsonSerializer.Deserialize<UserCredentials>(request.Body)
+            ?? throw new BadRequestException("Invalid JSON body");
 
         User createdUser = userService.RegisterUser(userCreds);
 
@@ -33,15 +31,11 @@ public static class UserController
 
     public static void GetUserProfile(StreamWriter writer, Request request, IUserService userService)
     {
-        string? username = RequestHelper.GetUsernameFromRequest(request);
-
-        if(username == null)
-            throw new BadRequestException("Username invalid in request line");
+        string? username = RequestHelper.GetUsernameFromRequest(request) 
+            ?? throw new BadRequestException("Username invalid in request line");
         
-        string? token = RequestHelper.GetAuthToken(request);
-
-        if(token == null)
-            throw new UnauthorizedException("Invalid token");
+        string? token = RequestHelper.GetAuthToken(request) 
+            ?? throw new UnauthorizedException("Invalid token");
         
         User dbUser = userService.ValidateUserAccess(username, token);       
 
@@ -58,19 +52,16 @@ public static class UserController
 
     public static void UpdateUserProfile(StreamWriter writer, Request request, IUserService userService)
     {
-        string? username = RequestHelper.GetUsernameFromRequest(request);
-
-        if(username == null)
-            throw new BadRequestException("Username invalid in request line");
+        string? username = RequestHelper.GetUsernameFromRequest(request)
+            ?? throw new BadRequestException("Username invalid in request line");
         
-        string? token = RequestHelper.GetAuthToken(request);
-
-        if(token == null)
-            throw new UnauthorizedException("Invalid token");
+        string? token = RequestHelper.GetAuthToken(request)
+            ?? throw new UnauthorizedException("Invalid token");
 
         User? dbUser = userService.ValidateUserAccess(username, token)!;
 
-        UserProfile? requestUserProfile = JsonSerializer.Deserialize<UserProfile>(request.Body)!;
+        UserProfile? requestUserProfile = JsonSerializer.Deserialize<UserProfile>(request.Body)
+            ?? throw new BadRequestException("Invalid JSON body");
 
         userService.CheckUserProfile(requestUserProfile, dbUser);
 

@@ -4,7 +4,6 @@ using SEB.Http;
 using SEB.Interfaces;
 using System.Text.Json;
 using SEB.Exceptions;
-using System.Net;
 
 namespace SEB.Controller;
 
@@ -12,10 +11,9 @@ public static class StatsController
 {
     public static void GetStats(StreamWriter writer, Request request, IStatsService statsService)
     {
-        if(!request.Headers.ContainsKey("Authorization"))
-            throw new UnauthorizedException("Header token required");
-        string? token = AuthHelper.GetTokenFromHeader(request.Headers)!;
-
+        string? token = RequestHelper.GetAuthToken(request)
+            ?? throw new UnauthorizedException("Invalid token");
+        
         Stats userStats = statsService.GetUserStatistics(token);
 
         var responseBody = new
@@ -31,9 +29,8 @@ public static class StatsController
 
     public static void GetAllStats(StreamWriter writer, Request request, IStatsService statsService)
     {
-        if(!request.Headers.ContainsKey("Authorization"))
-            throw new UnauthorizedException("Header token required");
-        string? token = AuthHelper.GetTokenFromHeader(request.Headers)!;
+        string? token = RequestHelper.GetAuthToken(request)
+            ?? throw new UnauthorizedException("Invalid token");
 
         List<Stats> scoreboard = statsService.GetAllStatistics(token);
 

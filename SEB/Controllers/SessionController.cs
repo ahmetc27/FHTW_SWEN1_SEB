@@ -3,6 +3,8 @@ using SEB.Exceptions;
 using SEB.Http;
 using SEB.Interfaces;
 using SEB.Models;
+using SEB.DTOs;
+using SEB.Mappers;
 using SEB.Utils;
 
 namespace SEB.Controller;
@@ -11,13 +13,8 @@ public static class SessionController
 {
     public static void Login(StreamWriter writer, Request request, IUserService userService, ISessionService sessionService)
     {
-        UserCredentials? userCreds = JsonSerializer.Deserialize<UserCredentials>(request.Body);
-
-        if(userCreds == null)
-        {
-            Logger.Error("Invalid JSON body");
-            throw new BadRequestException("Invalid JSON body");
-        }
+        UserCredentials? userCreds = JsonSerializer.Deserialize<UserCredentials>(request.Body)
+            ?? throw new BadRequestException("Invalid JSON body");
 
         User dbUser = userService.AuthenticateUser(userCreds);
 
@@ -26,15 +23,7 @@ public static class SessionController
         var responseBody = new
         {
             message = "Session created successfully",
-            user = new UserResponse
-            {
-                Id = dbUser.UserId,
-                Username = dbUser.Username,
-                Elo = dbUser.Elo,
-                Name = dbUser.Name,
-                Bio = dbUser.Bio,
-                Image = dbUser.Image
-            }
+            user = UserMapper.ToUserResponse(dbUser)
         };
         string json = JsonSerializer.Serialize(responseBody);
         

@@ -28,4 +28,10 @@ public static class RequestHelper
 
         return token;
     }
+
+    public static void ValidateCredentials(string value, string fieldName)
+    {
+        if(string.IsNullOrWhiteSpace(value))
+            throw new BadRequestException($"{fieldName} invalid");
+    }
 }

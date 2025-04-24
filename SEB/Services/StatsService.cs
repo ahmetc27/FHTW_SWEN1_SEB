@@ -2,6 +2,7 @@ using System.Collections;
 using SEB.Exceptions;
 using SEB.Interfaces;
 using SEB.Models;
+using SEB.Utils;
 
 namespace SEB.Services;
 
@@ -18,8 +19,7 @@ public class StatsService : IStatsService
     }
     public Stats GetUserStatistics(string token)
     {
-        if(string.IsNullOrWhiteSpace(token))
-            throw new BadRequestException("Token is missing or empty");
+        RequestHelper.ValidateCredentials(token, "Token");
 
         if(!sessionRepository.ExistToken(token))
             throw new UnauthorizedException("Token does not exist");
