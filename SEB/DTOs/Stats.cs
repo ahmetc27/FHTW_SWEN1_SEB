@@ -1,4 +1,4 @@
-namespace SEB.Models;
+namespace SEB.DTOs;
 public class Stats
 {
     public int Id { get; set; }

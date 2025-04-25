@@ -21,10 +21,9 @@ public static class HistoryController
             message = "History retrieved successfully",
             history
         };
-        string json = JsonSerializer.Serialize(responseBody);
         
-        Logger.Success($"History retrieved successfully: {json}");
-        Response.SendCreated(writer, json);
+        Logger.Success($"History retrieved successfully: {JsonSerializer.Serialize(responseBody)}");
+        Response.SendOk(writer, JsonSerializer.Serialize(responseBody));
     }
 
     public static void LogPushups(StreamWriter writer, Request request, IHistoryService historyService)

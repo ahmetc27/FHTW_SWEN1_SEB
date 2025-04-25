@@ -1,4 +1,4 @@
-using SEB.Models;
+using SEB.DTOs;
 using SEB.Utils;
 using SEB.Http;
 using SEB.Interfaces;

@@ -1,6 +1,6 @@
 using Npgsql;
 using SEB.Interfaces;
-using SEB.Models;
+using SEB.DTOs;
 using SEB.Utils;
 using System.Data;
 
@@ -55,10 +55,10 @@ public class StatsRepository : BaseRepository, IStatsRepository
         
         using IDbCommand command = connection.CreateCommand();
         command.CommandText =
-            "SELECT u.username, u.elo, COALESCE(SUM(h.count), 0) AS totalPushups " +
+            "SELECT u.id, u.elo, COALESCE(SUM(h.count), 0) AS totalPushups " +
             "FROM users u " +
             "LEFT JOIN history h ON u.id = h.user_id " +
-            "GROUP BY u.id";
+            "GROUP BY u.id ORDER BY u.id";
 
         using IDataReader reader = command.ExecuteReader();
 

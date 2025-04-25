@@ -20,17 +20,23 @@ public class HistoryService : IHistoryService
     }
     public History GetUserHistoryData(string token)
     {
-        if(string.IsNullOrWhiteSpace(token))
-            throw new BadRequestException(ErrorMessages.InvalidToken);
-
         if(!sessionRepository.ExistToken(token))
             throw new UnauthorizedException(ErrorMessages.TokenNotFound);
         
-        int? userId = userRepository.GetIdByToken(token)
+        int userId = userRepository.GetIdByToken(token)
             ?? throw new BadRequestException(ErrorMessages.UserIdNotFound);
 
-        History history = historyRepository.GetHistoryByUserId(userId.Value)
-            ?? throw new BadRequestException(ErrorMessages.HistoryNotFound);            
+        History? history = historyRepository.GetHistoryByUserId(userId);
+        
+        if(history == null)
+        {
+            Logger.Warn($"No history found for user {userId}, returning empty history.");
+            history = new History
+            {
+                Count = 0,
+                Duration = 0
+            };        
+        }
         
         return history;
     }

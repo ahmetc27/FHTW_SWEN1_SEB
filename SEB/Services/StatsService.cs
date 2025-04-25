@@ -1,7 +1,7 @@
 using System.Collections;
 using SEB.Exceptions;
 using SEB.Interfaces;
-using SEB.Models;
+using SEB.DTOs;
 using SEB.Utils;
 
 namespace SEB.Services;

@@ -1,5 +1,5 @@
 using System.Collections;
-using SEB.Models;
+using SEB.DTOs;
 
 namespace SEB.Interfaces;
 
