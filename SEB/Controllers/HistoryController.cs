@@ -36,7 +36,7 @@ public static class HistoryController
         HistoryRequest historyRequest = JsonSerializer.Deserialize<HistoryRequest>(request.Body)
             ?? throw new BadRequestException(ErrorMessages.InvalidRequestBody);
         
-        History addedHistory = historyService.LogPushups(token, historyRequest);
+        History addedHistory = historyService.LogPushups(token, historyRequest);        
 
         var responseBody = new
         {

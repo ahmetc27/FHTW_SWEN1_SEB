@@ -25,3 +25,11 @@ CREATE TABLE history (
 	created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	tournament_id INT REFERENCES tournaments(id)
 );
+
+CREATE TABLE tournament_participants (
+    tournament_id INT NOT NULL REFERENCES tournaments(id),
+    user_id INT NOT NULL REFERENCES users(id),
+    total_count INT NOT NULL DEFAULT 0,
+    total_duration INT NOT NULL DEFAULT 0,
+    PRIMARY KEY (tournament_id, user_id)
+);
