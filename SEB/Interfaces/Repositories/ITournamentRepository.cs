@@ -11,4 +11,5 @@ public interface ITournamentRepository
     void AddParticipant(int tournamentId, int userId, int count, int duration);
     void UpdateParticipant(int tournamentId, int userId, TournamentParticipant participant);
     public void EndTournament(int tournamentId);
+    public List<TournamentParticipant> GetParticipants(int tournamentId);
 }

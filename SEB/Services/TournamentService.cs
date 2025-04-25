@@ -23,6 +23,53 @@ public class TournamentService : ITournamentService
         if(!sessionRepository.ExistToken(token))
             throw new UnauthorizedException(ErrorMessages.TokenNotFound);
         
-        return tournamentRepository.GetCurrentTournament();
+        var tournament = tournamentRepository.GetCurrentTournament();
+
+        if(tournament != null && tournament.Status == "active" && tournament.StartTime.AddMinutes(2) <= DateTime.Now)
+        {
+            EvaluateTournament(tournament.Id);
+        
+            // Get the new current tournament (which could be null now)
+            tournament = tournamentRepository.GetCurrentTournament();
+        }
+        
+        return tournament;
+    }
+
+    public void EvaluateTournament(int tournamentId)
+    {
+        var participants = tournamentRepository.GetParticipants(tournamentId);
+        
+        if(participants == null)
+            throw new Exception("No participants in tournament");
+        
+        int maxCount = participants.Max(p => p.TotalCount);
+        var winners = participants.Where(p => p.TotalCount == maxCount).ToList();
+
+        foreach(var participant in participants)
+        {
+            int userId = participant.UserId;
+            User? user = userRepository.GetUserById(userId);
+            
+            if(user == null)
+            {
+                Logger.Error($"User {userId} not found when evaluating tournament");
+                continue;
+            }
+
+            if(winners.Contains(participant))
+            {
+                user.Elo += 1;
+                Logger.Info($"User {userId} tied for first place in tournament {tournamentId}, +1 ELO");
+            }
+            else
+            {
+                user.Elo += 2;
+                Logger.Info($"User {userId} won tournament {tournamentId}, +2 ELO");
+            }
+            userRepository.UpdateElo(userId, user.Elo);
+        }
+        tournamentRepository.EndTournament(tournamentId);
+        Logger.Success($"Tournament {tournamentId} evaluated and closed successfully");
     }
 }

@@ -13,7 +13,7 @@ ITournamentRepository tournamentRepository = new TournamentRepository();
 IUserService userService = new UserService(userRepository);
 ISessionService sessionService = new SessionService(userRepository, sessionRepository);
 IStatsService statsService = new StatsService(userRepository, sessionRepository, statsRepository);
-IHistoryService historyService = new HistoryService(userRepository, sessionRepository, historyRepository);
+IHistoryService historyService = new HistoryService(userRepository, sessionRepository, historyRepository, tournamentRepository);
 ITournamentService tournamentService = new TournamentService(userRepository, sessionRepository, historyRepository, tournamentRepository);
 
 IServerService serverService = new ServerService();

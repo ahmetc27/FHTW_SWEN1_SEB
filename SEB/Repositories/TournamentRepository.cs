@@ -135,4 +135,30 @@ public class TournamentRepository : BaseRepository, ITournamentRepository
         if(affectedRows == 0)
             throw new Exception("Failed to end tournament");
     }
+
+    public List<TournamentParticipant> GetParticipants(int tournamentId)
+    {
+        using IDbConnection connection = new NpgsqlConnection(connectionString);
+        connection.Open();
+        
+        using IDbCommand command = connection.CreateCommand();
+        command.CommandText = "SELECT tournament_id, user_id, total_count, total_duration FROM tournament_participants WHERE tournament_id=@tId";
+        AddParameterWithValue(command, "@tId", DbType.Int32, tournamentId);
+
+        using IDataReader reader = command.ExecuteReader();
+        var participants = new List<TournamentParticipant>();
+        
+        while(reader.Read())
+        {
+            participants.Add(new TournamentParticipant
+            {
+                TournamentId = reader.GetInt32(0),
+                UserId = reader.GetInt32(1),
+                TotalCount = reader.GetInt32(2),
+                TotalDuration = reader.GetInt32(3)
+            });
+        }
+        
+        return participants;
+    }
 }

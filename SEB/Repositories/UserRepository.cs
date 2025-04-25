@@ -140,4 +140,44 @@ public class UserRepository : BaseRepository, IUserRepository
 
         return null;
     }
+
+    public User? GetUserById(int userId)
+    {
+        using IDbConnection connection = new NpgsqlConnection(connectionString);
+        connection.Open();
+
+        using IDbCommand command = connection.CreateCommand();
+        command.CommandText = "SELECT * FROM users WHERE id=@userId";
+        AddParameterWithValue(command, "@userId", DbType.Int32, userId);
+
+        using IDataReader reader = command.ExecuteReader();
+        if(reader.Read())
+        {
+            return new User
+            {
+                UserId = reader.GetInt32(0),
+                Username = reader.GetString(1),
+                Password = reader.GetString(2),
+                Elo = reader.GetInt32(3),
+                Token = reader.IsDBNull(4) ? string.Empty : reader.GetString(4),
+                Name = reader.IsDBNull(5) ? string.Empty : reader.GetString(5),
+                Bio = reader.IsDBNull(6) ? string.Empty : reader.GetString(6),
+                Image = reader.IsDBNull(7) ? string.Empty : reader.GetString(7)
+            };
+        }
+        return null;
+    }
+
+    public void UpdateElo(int userId, int newElo)
+    {
+        using IDbConnection connection = new NpgsqlConnection(connectionString);
+        connection.Open();
+
+        using IDbCommand command = connection.CreateCommand();
+        command.CommandText = "UPDATE users SET elo=@elo WHERE id=@userId";
+        AddParameterWithValue(command, "@userId", DbType.Int32, userId);
+        AddParameterWithValue(command, "@elo", DbType.Int32, newElo);
+
+        command.ExecuteNonQuery();
+    }
 }

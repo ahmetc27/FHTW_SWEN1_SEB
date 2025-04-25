@@ -4,10 +4,12 @@ namespace SEB.Interfaces;
 
 public interface IUserRepository
 {
-    public bool ExistUsername(string username);
-    public User AddUser(string username, string password);
-    public User? GetUser(string username, string password);
-    public User? GetUserByUsernameAndToken(string username, string token);
-    public void Update(User user);
-    public int? GetIdByToken(string token);
+    bool ExistUsername(string username);
+    User AddUser(string username, string password);
+    User? GetUser(string username, string password);
+    User? GetUserByUsernameAndToken(string username, string token);
+    void Update(User user);
+    int? GetIdByToken(string token);
+    User? GetUserById(int userId);
+    void UpdateElo(int userId, int newElo);
 }
