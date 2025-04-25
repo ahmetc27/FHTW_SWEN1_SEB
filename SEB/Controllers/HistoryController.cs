@@ -1,4 +1,5 @@
 using System.Text.Json;
+using SEB.DTOs;
 using SEB.Exceptions;
 using SEB.Http;
 using SEB.Interfaces;
@@ -30,5 +31,21 @@ public static class HistoryController
     {
         string token = RequestHelper.GetAuthToken(request)
             ?? throw new UnauthorizedException(ErrorMessages.InvalidToken);
+
+        HistoryRequest historyRequest = JsonSerializer.Deserialize<HistoryRequest>(request.Body)
+            ?? throw new BadRequestException(ErrorMessages.InvalidRequestBody);
+        
+        History addedHistory = historyService.LogPushups(token, historyRequest);
+
+        var responseBody = new
+        {
+            message = "Pushups logged successfully",
+            name = addedHistory.Name,
+            count = addedHistory.Count,
+            duration = addedHistory.Duration
+        };
+
+        Logger.Success($"Pushups logged successfully: {JsonSerializer.Serialize(responseBody)}");
+        Response.SendCreated(writer, JsonSerializer.Serialize(responseBody));
     }
 }

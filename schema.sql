@@ -12,6 +12,7 @@ CREATE TABLE users (
 CREATE TABLE history (
     id SERIAL PRIMARY KEY,
     user_id INT NOT NULL REFERENCES users(id),
+	name VARCHAR(50),
     count INT NOT NULL,
     duration INT NOT NULL
 );

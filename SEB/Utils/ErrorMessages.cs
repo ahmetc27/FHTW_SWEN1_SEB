@@ -10,10 +10,12 @@ public static class ErrorMessages
     
     // Request validation
     public const string InvalidJson = "Invalid JSON body";
+    public const string InvalidRequestBody = "Invalid request body";
     public const string InvalidUsername = "Username invalid in request line";
     public const string UsernameRequired = "Username must not be empty";
     public const string PasswordRequired = "Password must not be empty";
     public const string UserIdNotFound = "Could not find user ID for the provided token";
+    public const string PositiveNumbersRequired = "Count and duration must be positive numbers";
     
     // Authentication
     public const string TokenRequired = "Header token required";
@@ -26,6 +28,7 @@ public static class ErrorMessages
     
     // Database
     public const string DatabaseInsertError = "Unexpected error: User could not be inserted into the database";
+    public const string DatabaseInsertHistoryError = "Unexpected error: Failed to insert history entry.";
     public const string TokenNotFound = "Token does not exist";
     
     // Stats and History

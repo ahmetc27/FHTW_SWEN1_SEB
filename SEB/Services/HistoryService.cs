@@ -1,3 +1,4 @@
+using SEB.DTOs;
 using SEB.Exceptions;
 using SEB.Interfaces;
 using SEB.Models;
@@ -39,5 +40,24 @@ public class HistoryService : IHistoryService
         }
         
         return history;
+    }
+
+    public History LogPushups(string token, HistoryRequest historyRequest)
+    {
+        
+        if(historyRequest.Count <= 0 || historyRequest.DurationInSeconds <= 0)
+            throw new BadRequestException(ErrorMessages.PositiveNumbersRequired);
+
+        int userId = userRepository.GetIdByToken(token)
+            ?? throw new BadRequestException(ErrorMessages.UserIdNotFound);
+        
+        var history = new History
+        {
+            Name = historyRequest.Name,
+            Count = historyRequest.Count,
+            Duration = historyRequest.DurationInSeconds
+        };
+
+        return historyRepository.Add(userId, history);
     }
 }
