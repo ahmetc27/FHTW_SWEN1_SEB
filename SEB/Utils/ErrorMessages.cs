@@ -31,7 +31,8 @@ public static class ErrorMessages
     public const string DatabaseInsertHistoryError = "Unexpected error: Failed to insert history entry.";
     public const string TokenNotFound = "Token does not exist";
     
-    // Stats and History
+    // Stats, History and Tournament
     public const string HistoryNotFound = "History is null";
     public const string StatsNotFound = "Could not retrieve user stats";
+    public const string TournamentNotFound = "Tournament not found";
 }

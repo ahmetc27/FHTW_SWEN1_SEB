@@ -22,9 +22,8 @@ public static class StatsController
             stats = userStats
         };
         
-        string json = JsonSerializer.Serialize(responseBody);
-        Logger.Success($"User stats retrieved: {json}");
-        Response.SendOk(writer, json);
+        Logger.Success($"User stats retrieved: {JsonSerializer.Serialize(responseBody)}");
+        Response.SendOk(writer, JsonSerializer.Serialize(responseBody));
     }
 
     public static void GetAllStats(StreamWriter writer, Request request, IStatsService statsService)
@@ -39,9 +38,8 @@ public static class StatsController
             message = "Scoreboard retrieved successfully",
             scoreboard
         };
-        
-        string json = JsonSerializer.Serialize(responseBody);
-        Logger.Success($"Scoreboard retrieved: {json}");
-        Response.SendOk(writer, json);
+
+        Logger.Success($"Scoreboard retrieved: {JsonSerializer.Serialize(responseBody)}");
+        Response.SendOk(writer, JsonSerializer.Serialize(responseBody));
     }
 }

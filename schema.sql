@@ -9,10 +9,19 @@ CREATE TABLE users (
 	image VARCHAR(50)
 );
 
+CREATE TABLE tournaments (
+    id SERIAL PRIMARY KEY,
+    start_time TIMESTAMP NOT NULL,
+    end_time TIMESTAMP,
+    status VARCHAR(20) NOT NULL DEFAULT 'active' -- 'active', 'ended'
+);
+
 CREATE TABLE history (
     id SERIAL PRIMARY KEY,
     user_id INT NOT NULL REFERENCES users(id),
 	name VARCHAR(50),
     count INT NOT NULL,
-    duration INT NOT NULL
+    duration INT NOT NULL,
+	created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	tournament_id INT REFERENCES tournaments(id)
 );

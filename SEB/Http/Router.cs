@@ -11,12 +11,14 @@ public class Router
     private readonly ISessionService sessionService;
     private readonly IStatsService statsService;
     private readonly IHistoryService historyService;
-    public Router(IUserService userService, ISessionService sessionService, IStatsService statsService, IHistoryService historyService)
+    private readonly ITournamentService tournamentService;
+    public Router(IUserService userService, ISessionService sessionService, IStatsService statsService, IHistoryService historyService, ITournamentService tournamentService)
     {
         this.userService = userService;
         this.sessionService = sessionService;
         this.statsService = statsService;
         this.historyService = historyService;
+        this.tournamentService = tournamentService;
     }
 
     public void Route(Request request, StreamWriter writer)
@@ -103,8 +105,9 @@ public class Router
         else if(request.Path == "/history") //history
             HistoryController.GetHistory(writer, request, historyService);
         
-        //else if(request.Path == "/tournament") //tournament
-            // TournamentController
+        else if(request.Path == "/tournament") //tournament
+            TournamentController.GetCurrentTournament(writer, request, tournamentService);
+            
         else
             throw new BadRequestException("Invalid path");
     }

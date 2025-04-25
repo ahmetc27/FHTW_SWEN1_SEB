@@ -20,7 +20,8 @@ public static class HistoryController
         var responseBody = new
         {
             message = "History retrieved successfully",
-            history
+            count = history.Count,
+            duration = history.Duration
         };
         
         Logger.Success($"History retrieved successfully: {JsonSerializer.Serialize(responseBody)}");
@@ -40,9 +41,7 @@ public static class HistoryController
         var responseBody = new
         {
             message = "Pushups logged successfully",
-            name = addedHistory.Name,
-            count = addedHistory.Count,
-            duration = addedHistory.Duration
+            addedHistory
         };
 
         Logger.Success($"Pushups logged successfully: {JsonSerializer.Serialize(responseBody)}");

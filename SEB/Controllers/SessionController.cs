@@ -24,9 +24,8 @@ public static class SessionController
             message = "Session created successfully",
             user = UserMapper.ToUserResponse(dbUser)
         };
-        string json = JsonSerializer.Serialize(responseBody);
         
-        Logger.Success($"Session created successfully: {json}");
-        Response.SendCreated(writer, json);
+        Logger.Success($"Session created successfully: {JsonSerializer.Serialize(responseBody)}");
+        Response.SendCreated(writer, JsonSerializer.Serialize(responseBody));
     }
 }
