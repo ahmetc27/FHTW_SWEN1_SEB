@@ -59,13 +59,21 @@ public class TournamentService : ITournamentService
 
             if(winners.Contains(participant))
             {
-                user.Elo += 1;
-                Logger.Info($"User {userId} tied for first place in tournament {tournamentId}, +1 ELO");
+                if(winners.Count > 1)
+                {
+                    user.Elo += 1;
+                    Logger.Info($"User {userId} tied for first place in tournament {tournamentId}, +1 ELO");
+                }
+                else
+                {
+                    user.Elo += 2;
+                    Logger.Info($"User {userId} won tournament {tournamentId}, +2 ELO");
+                }
             }
             else
             {
-                user.Elo += 2;
-                Logger.Info($"User {userId} won tournament {tournamentId}, +2 ELO");
+                user.Elo -= 1;
+                Logger.Info($"User {userId} lost in tournament {tournamentId}, -1 ELO");
             }
             userRepository.UpdateElo(userId, user.Elo);
         }
