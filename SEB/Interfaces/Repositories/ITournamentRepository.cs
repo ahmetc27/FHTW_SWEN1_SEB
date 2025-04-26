@@ -12,4 +12,5 @@ public interface ITournamentRepository
     void UpdateParticipant(int tournamentId, int userId, TournamentParticipant participant);
     public void EndTournament(int tournamentId);
     public List<TournamentParticipant> GetParticipants(int tournamentId);
+    public Tournament? GetMostRecentTournament();
 }

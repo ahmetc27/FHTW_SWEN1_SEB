@@ -39,7 +39,7 @@ public class TournamentRepository : BaseRepository, ITournamentRepository
         
         using IDbCommand command = connection.CreateCommand();
         command.CommandText = "INSERT INTO tournaments (start_time, status) VALUES (@startTime, @status) RETURNING id, start_time, end_time, status";
-        AddParameterWithValue(command, "@startTime", DbType.DateTime, DateTime.Now);
+        AddParameterWithValue(command, "@startTime", DbType.DateTime, DateTime.UtcNow);
         AddParameterWithValue(command, "@status", DbType.String, "active");
 
         using IDataReader reader = command.ExecuteReader();
@@ -128,7 +128,7 @@ public class TournamentRepository : BaseRepository, ITournamentRepository
         using IDbCommand command = connection.CreateCommand();
         command.CommandText = "UPDATE tournaments SET status=@status, end_time = @endTime WHERE id=@tId";
         AddParameterWithValue(command, "@tId", DbType.Int32, tournamentId);
-        AddParameterWithValue(command, "@endTime", DbType.DateTime, DateTime.Now);
+        AddParameterWithValue(command, "@endTime", DbType.DateTime, DateTime.UtcNow);
         AddParameterWithValue(command, "@status", DbType.String, "ended");
         
         int affectedRows = command.ExecuteNonQuery();
@@ -160,5 +160,28 @@ public class TournamentRepository : BaseRepository, ITournamentRepository
         }
         
         return participants;
+    }
+
+    public Tournament? GetMostRecentTournament()
+    {
+        using IDbConnection connection = new NpgsqlConnection(connectionString);
+        connection.Open();
+        
+        using IDbCommand command = connection.CreateCommand();
+        command.CommandText = "SELECT id, start_time, end_time, status FROM tournaments ORDER BY start_time DESC LIMIT 1";
+
+        using IDataReader reader = command.ExecuteReader();
+        
+        if(reader.Read())
+        {
+            return new Tournament
+            {
+                Id = reader.GetInt32(0),
+                StartTime = reader.GetDateTime(1),
+                EndTime = reader.IsDBNull(2) ? null : reader.GetDateTime(2),
+                Status = reader.GetString(3)
+            };
+        }
+        return null;
     }
 }

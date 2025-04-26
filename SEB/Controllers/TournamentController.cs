@@ -14,12 +14,17 @@ public static class TournamentController
         string token = RequestHelper.GetAuthToken(request)
             ?? throw new UnauthorizedException(ErrorMessages.InvalidToken);
 
-        Tournament tournament = tournamentService.GetCurrentTournament(token)
-            ?? throw new BadRequestException(ErrorMessages.TournamentNotFound);
+        Tournament? tournament = tournamentService.GetCurrentTournament(token);
 
+        var message = tournament == null 
+            ? "No tournament found" 
+            : tournament.Status == "active"
+                ? "Active tournament retrieved successfully" 
+                : "Ended tournament retrieved successfully";
+        
         var response = new
         {
-            message = "Tournament infos retrieved successfully",
+            message = message,
             tournament
         };
         Logger.Success(JsonSerializer.Serialize(response));

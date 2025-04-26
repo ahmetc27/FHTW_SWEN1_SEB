@@ -64,7 +64,7 @@ public class HistoryService : IHistoryService
         if(activeTournament == null)
             activeTournament = tournamentRepository.StartNewTournament();
 
-        if(activeTournament.StartTime.AddMinutes(2) <= DateTime.Now)
+        if(activeTournament.StartTime.AddMinutes(2) <= DateTime.UtcNow)
         {
             tournamentRepository.EndTournament(activeTournament.Id);
             activeTournament = tournamentRepository.StartNewTournament();

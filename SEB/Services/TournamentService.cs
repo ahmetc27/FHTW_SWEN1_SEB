@@ -25,7 +25,7 @@ public class TournamentService : ITournamentService
         
         var tournament = tournamentRepository.GetCurrentTournament();
 
-        if(tournament != null && tournament.Status == "active" && tournament.StartTime.AddMinutes(2) <= DateTime.Now)
+        if(tournament != null && tournament.Status == "active" && tournament.StartTime.AddMinutes(2) <= DateTime.UtcNow)
         {
             EvaluateTournament(tournament.Id);
         
@@ -33,6 +33,9 @@ public class TournamentService : ITournamentService
             tournament = tournamentRepository.GetCurrentTournament();
         }
         
+        if(tournament == null)
+            tournament = tournamentRepository.GetMostRecentTournament();
+
         return tournament;
     }
 
