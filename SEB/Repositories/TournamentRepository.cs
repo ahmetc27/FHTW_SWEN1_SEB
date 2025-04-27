@@ -14,7 +14,7 @@ public class TournamentRepository : BaseRepository, ITournamentRepository
         connection.Open();
         
         using IDbCommand command = connection.CreateCommand();
-        command.CommandText = "SELECT id, start_time, end_time, status FROM tournaments WHERE status=@status";
+        command.CommandText = "SELECT id, start_time, end_time, status FROM tournaments WHERE status = @status";
         AddParameterWithValue(command, "@status", DbType.String, "active");
 
         using IDataReader reader = command.ExecuteReader();
@@ -56,15 +56,15 @@ public class TournamentRepository : BaseRepository, ITournamentRepository
         throw new Exception("Tournament creation failed.");
     }
 
-    public TournamentParticipant? GetParticipant(int tId, int uId)
+    public TournamentParticipant? GetParticipant(int tournamentId, int userId)
     {
         using IDbConnection connection = new NpgsqlConnection(connectionString);
         connection.Open();
         
         using IDbCommand command = connection.CreateCommand();
-        command.CommandText = "SELECT tournament_id, user_id, total_count, total_duration FROM tournament_participants WHERE tournament_id=@tId AND user_id=@uId";
-        AddParameterWithValue(command, "@tId", DbType.Int32, tId);
-        AddParameterWithValue(command, "@uId", DbType.Int32, uId);
+        command.CommandText = "SELECT tournament_id, user_id, total_count, total_duration FROM tournament_participants WHERE tournament_id = @tournamentId AND user_id = @userId";
+        AddParameterWithValue(command, "@tournamentId", DbType.Int32, tournamentId);
+        AddParameterWithValue(command, "@userId", DbType.Int32, userId);
 
         using IDataReader reader = command.ExecuteReader();
         if(reader.Read())
@@ -108,10 +108,10 @@ public class TournamentRepository : BaseRepository, ITournamentRepository
         using IDbCommand command = connection.CreateCommand();
         command.CommandText = 
                     "UPDATE tournament_participants SET total_count = @count, total_duration = @duration " +
-                    "WHERE tournament_id = @tId AND user_id = @uId";
+                    "WHERE tournament_id = @tournamentId AND user_id = @userId";
 
-        AddParameterWithValue(command, "@tId", DbType.Int32, tournamentId);
-        AddParameterWithValue(command, "@uId", DbType.Int32, userId);
+        AddParameterWithValue(command, "@tournamentId", DbType.Int32, tournamentId);
+        AddParameterWithValue(command, "@userId", DbType.Int32, userId);
         AddParameterWithValue(command, "@count", DbType.Int32, participant.TotalCount);
         AddParameterWithValue(command, "@duration", DbType.Int32, participant.TotalDuration);
         
@@ -126,8 +126,8 @@ public class TournamentRepository : BaseRepository, ITournamentRepository
         connection.Open();
         
         using IDbCommand command = connection.CreateCommand();
-        command.CommandText = "UPDATE tournaments SET status=@status, end_time = @endTime WHERE id=@tId";
-        AddParameterWithValue(command, "@tId", DbType.Int32, tournamentId);
+        command.CommandText = "UPDATE tournaments SET status=@status, end_time = @endTime WHERE id=@tournamentId";
+        AddParameterWithValue(command, "@tournamentId", DbType.Int32, tournamentId);
         AddParameterWithValue(command, "@endTime", DbType.DateTime, DateTime.UtcNow);
         AddParameterWithValue(command, "@status", DbType.String, "ended");
         
@@ -142,7 +142,7 @@ public class TournamentRepository : BaseRepository, ITournamentRepository
         connection.Open();
         
         using IDbCommand command = connection.CreateCommand();
-        command.CommandText = "SELECT tournament_id, user_id, total_count, total_duration FROM tournament_participants WHERE tournament_id=@tId";
+        command.CommandText = "SELECT tournament_id, user_id, total_count, total_duration FROM tournament_participants WHERE tournament_id = @tournamentId";
         AddParameterWithValue(command, "@tId", DbType.Int32, tournamentId);
 
         using IDataReader reader = command.ExecuteReader();
@@ -162,26 +162,30 @@ public class TournamentRepository : BaseRepository, ITournamentRepository
         return participants;
     }
 
-    public Tournament? GetMostRecentTournament()
+    public List<Tournament>? GetAllTournaments()
     {
         using IDbConnection connection = new NpgsqlConnection(connectionString);
         connection.Open();
         
         using IDbCommand command = connection.CreateCommand();
-        command.CommandText = "SELECT id, start_time, end_time, status FROM tournaments ORDER BY start_time DESC LIMIT 1";
+        command.CommandText = "SELECT id, start_time, end_time, status FROM tournaments WHERE status = @status ORDER BY start_time";
+        AddParameterWithValue(command, "@status", DbType.String, "ended");
 
         using IDataReader reader = command.ExecuteReader();
+
+        List<Tournament> tournaments = new();
         
-        if(reader.Read())
+        while(reader.Read())
         {
-            return new Tournament
+            Tournament tournament =  new Tournament
             {
                 Id = reader.GetInt32(0),
                 StartTime = reader.GetDateTime(1),
                 EndTime = reader.IsDBNull(2) ? null : reader.GetDateTime(2),
                 Status = reader.GetString(3)
             };
+            tournaments.Add(tournament);
         }
-        return null;
+        return tournaments;
     }
 }

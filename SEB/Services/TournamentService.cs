@@ -18,7 +18,7 @@ public class TournamentService : ITournamentService
         this.historyRepository = historyRepository;
         this.tournamentRepository = tournamentRepository;
     }
-    public Tournament? GetCurrentTournament(string token)
+    public TournamentResponse GetCurrentTournament(string token)
     {
         if(!sessionRepository.ExistToken(token))
             throw new UnauthorizedException(ErrorMessages.TokenNotFound);
@@ -28,22 +28,31 @@ public class TournamentService : ITournamentService
         if(tournament != null && tournament.Status == "active" && tournament.StartTime.AddMinutes(2) <= DateTime.UtcNow)
         {
             EvaluateTournament(tournament.Id);
-        
-            // Get the new current tournament (which could be null now)
             tournament = tournamentRepository.GetCurrentTournament();
         }
-        
-        if(tournament == null)
-            tournament = tournamentRepository.GetMostRecentTournament();
 
-        return tournament;
+        if(tournament == null)
+        {
+            List<Tournament>? tournaments = tournamentRepository.GetAllTournaments();
+            return new TournamentResponse
+            {
+                ActiveTournament = null,
+                PastTournaments = tournaments
+            };
+        }
+
+        return new TournamentResponse
+        {
+            ActiveTournament = tournament,
+            PastTournaments = null
+        };
     }
 
     public void EvaluateTournament(int tournamentId)
     {
         var participants = tournamentRepository.GetParticipants(tournamentId);
         
-        if(participants == null)
+        if(participants == null || participants.Count == 0)
             throw new Exception("No participants in tournament");
         
         int maxCount = participants.Max(p => p.TotalCount);
