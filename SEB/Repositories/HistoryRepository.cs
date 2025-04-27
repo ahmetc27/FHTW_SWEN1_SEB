@@ -46,7 +46,7 @@ public class HistoryRepository : BaseRepository, IHistoryRepository
         using IDbCommand command = connection.CreateCommand();
 
         command.CommandText =
-            "INSERT INTO history (user_id, name, count, duration, tournament_id) VALUES (@userid, @name, @count, @duration, @tournament_id) RETURNING name, count, duration";
+            "INSERT INTO history (user_id, name, count, duration, tournament_id) VALUES (@userid, @name, @count, @duration, @tournament_id) RETURNING id, name, count, duration, tournament_id";
 
         AddParameterWithValue(command, "@userid", DbType.Int32, userid);
         AddParameterWithValue(command, "@name", DbType.String, history.Name);
@@ -59,9 +59,11 @@ public class HistoryRepository : BaseRepository, IHistoryRepository
         {
             return new History
             {
-                Name = reader.GetString(0),
-                Count = reader.GetInt32(1),
-                Duration = reader.GetInt32(2)
+                Id = reader.GetInt32(0),
+                Name = reader.GetString(1),
+                Count = reader.GetInt32(2),
+                Duration = reader.GetInt32(3),
+                TournamentId = reader.GetInt32(4)
             };
         }
 
