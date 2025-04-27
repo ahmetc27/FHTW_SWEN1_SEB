@@ -16,7 +16,7 @@ public class HistoryRepository : BaseRepository, IHistoryRepository
         using IDbCommand command = connection.CreateCommand();
 
         command.CommandText =
-            "SELECT count, duration FROM history WHERE user_id = @userid";
+            "SELECT id, count, duration FROM history WHERE user_id = @userid";
 
         AddParameterWithValue(command, "@userid", DbType.Int32, userid);
 
@@ -28,8 +28,9 @@ public class HistoryRepository : BaseRepository, IHistoryRepository
         {
             History history = new History
             {
-                Count = reader.IsDBNull(0) ? 0 : reader.GetInt32(0),
-                Duration = reader.IsDBNull(1) ? 0 : reader.GetInt32(1)
+                Id = reader.IsDBNull(0) ? 0 : reader.GetInt32(0),
+                Count = reader.IsDBNull(1) ? 0 : reader.GetInt32(1),
+                Duration = reader.IsDBNull(2) ? 0 : reader.GetInt32(2),
             };
 
             historyEntries.Add(history);
@@ -45,12 +46,13 @@ public class HistoryRepository : BaseRepository, IHistoryRepository
         using IDbCommand command = connection.CreateCommand();
 
         command.CommandText =
-            "INSERT INTO history (user_id, name, count, duration) VALUES (@userid, @name, @count, @duration) RETURNING name, count, duration";
+            "INSERT INTO history (user_id, name, count, duration, tournament_id) VALUES (@userid, @name, @count, @duration, @tournament_id) RETURNING name, count, duration";
 
         AddParameterWithValue(command, "@userid", DbType.Int32, userid);
         AddParameterWithValue(command, "@name", DbType.String, history.Name);
         AddParameterWithValue(command, "@count", DbType.Int32, history.Count);
         AddParameterWithValue(command, "@duration", DbType.Int32, history.Duration);
+        AddParameterWithValue(command, "@tournament_id", DbType.Int32, history.TournamentId);
 
         using IDataReader reader = command.ExecuteReader();
         if(reader.Read())

@@ -143,7 +143,7 @@ public class TournamentRepository : BaseRepository, ITournamentRepository
         
         using IDbCommand command = connection.CreateCommand();
         command.CommandText = "SELECT tournament_id, user_id, total_count, total_duration FROM tournament_participants WHERE tournament_id = @tournamentId";
-        AddParameterWithValue(command, "@tId", DbType.Int32, tournamentId);
+        AddParameterWithValue(command, "@tournamentId", DbType.Int32, tournamentId);
 
         using IDataReader reader = command.ExecuteReader();
         var participants = new List<TournamentParticipant>();

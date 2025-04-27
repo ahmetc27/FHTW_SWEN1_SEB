@@ -70,6 +70,8 @@ public class HistoryService : IHistoryService
             tournamentRepository.EndTournament(activeTournament.Id);
             activeTournament = tournamentRepository.StartNewTournament();
         }
+
+        history.TournamentId = activeTournament.Id;
         
         var participant = tournamentRepository.GetParticipant(activeTournament.Id, userId);
 
