@@ -13,4 +13,5 @@ public interface ITournamentRepository
     public void EndTournament(int tournamentId);
     public List<TournamentParticipant> GetParticipants(int tournamentId);
     public List<Tournament>? GetAllTournaments();
+    public void SetWinner(int tournamentId, List<TournamentParticipant> winners);
 }

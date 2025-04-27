@@ -6,4 +6,5 @@ public class Tournament
     public DateTime StartTime { get; set; }
     public DateTime? EndTime { get; set; }
     public string Status { get; set; } = "active"; // "active" or "ended"
+    public string? Winner { get; set; }
 }

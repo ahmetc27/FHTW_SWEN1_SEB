@@ -14,7 +14,7 @@ public class TournamentRepository : BaseRepository, ITournamentRepository
         connection.Open();
         
         using IDbCommand command = connection.CreateCommand();
-        command.CommandText = "SELECT id, start_time, end_time, status FROM tournaments WHERE status = @status";
+        command.CommandText = "SELECT id, start_time, end_time, status, winner FROM tournaments WHERE status = @status";
         AddParameterWithValue(command, "@status", DbType.String, "active");
 
         using IDataReader reader = command.ExecuteReader();
@@ -26,7 +26,8 @@ public class TournamentRepository : BaseRepository, ITournamentRepository
                 Id = reader.GetInt32(0),
                 StartTime = reader.GetDateTime(1),
                 EndTime = reader.IsDBNull(2) ? null : reader.GetDateTime(2),
-                Status = reader.GetString(3)
+                Status = reader.GetString(3),
+                Winner = reader.IsDBNull(4) ? null : reader.GetString(4)
             };
         }
         return null;
@@ -38,7 +39,7 @@ public class TournamentRepository : BaseRepository, ITournamentRepository
         connection.Open();
         
         using IDbCommand command = connection.CreateCommand();
-        command.CommandText = "INSERT INTO tournaments (start_time, status) VALUES (@startTime, @status) RETURNING id, start_time, end_time, status";
+        command.CommandText = "INSERT INTO tournaments (start_time, status) VALUES (@startTime, @status) RETURNING id, start_time, end_time, status, winner";
         AddParameterWithValue(command, "@startTime", DbType.DateTime, DateTime.UtcNow);
         AddParameterWithValue(command, "@status", DbType.String, "active");
 
@@ -50,7 +51,8 @@ public class TournamentRepository : BaseRepository, ITournamentRepository
                 Id = reader.GetInt32(0),
                 StartTime = reader.GetDateTime(1),
                 EndTime = reader.IsDBNull(2) ? null : reader.GetDateTime(2),
-                Status = reader.GetString(3)
+                Status = reader.GetString(3),
+                Winner = reader.IsDBNull(4) ? null : reader.GetString(4)
             };
         }
         throw new Exception("Tournament creation failed.");
@@ -168,7 +170,7 @@ public class TournamentRepository : BaseRepository, ITournamentRepository
         connection.Open();
         
         using IDbCommand command = connection.CreateCommand();
-        command.CommandText = "SELECT id, start_time, end_time, status FROM tournaments WHERE status = @status ORDER BY start_time";
+        command.CommandText = "SELECT id, start_time, end_time, status, winner FROM tournaments WHERE status = @status ORDER BY start_time";
         AddParameterWithValue(command, "@status", DbType.String, "ended");
 
         using IDataReader reader = command.ExecuteReader();
@@ -182,10 +184,29 @@ public class TournamentRepository : BaseRepository, ITournamentRepository
                 Id = reader.GetInt32(0),
                 StartTime = reader.GetDateTime(1),
                 EndTime = reader.IsDBNull(2) ? null : reader.GetDateTime(2),
-                Status = reader.GetString(3)
+                Status = reader.GetString(3),
+                Winner = reader.GetString(4)
             };
             tournaments.Add(tournament);
         }
         return tournaments;
+    }
+
+    public void SetWinner(int tournamentId, List<TournamentParticipant> winners)
+    {
+        using IDbConnection connection = new NpgsqlConnection(connectionString);
+        connection.Open();
+        
+        using IDbCommand command = connection.CreateCommand();
+
+        string winnerNames = string.Join(",", winners.Select(w => w.UserId));
+
+        command.CommandText = "UPDATE tournaments SET winner = @winner WHERE id = @tournamentId";
+        AddParameterWithValue(command, "@tournamentId", DbType.Int32, tournamentId);
+        AddParameterWithValue(command, "@winner", DbType.String, winnerNames);
+
+        int affectedRows = command.ExecuteNonQuery();
+        if(affectedRows == 0)
+            throw new Exception("Failed to set tournament winner");
     }
 }

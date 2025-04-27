@@ -74,11 +74,13 @@ public class TournamentService : ITournamentService
                 if(winners.Count > 1)
                 {
                     user.Elo += 1;
+                    tournamentRepository.SetWinner(tournamentId, winners);
                     Logger.Info($"User {userId} tied for first place in tournament {tournamentId}, +1 ELO");
                 }
                 else
                 {
                     user.Elo += 2;
+                    tournamentRepository.SetWinner(tournamentId, winners);
                     Logger.Info($"User {userId} won tournament {tournamentId}, +2 ELO");
                 }
             }
@@ -89,6 +91,7 @@ public class TournamentService : ITournamentService
             }
             userRepository.UpdateElo(userId, user.Elo);
         }
+        
         tournamentRepository.EndTournament(tournamentId);
         Logger.Success($"Tournament {tournamentId} evaluated and closed successfully");
     }

@@ -13,7 +13,8 @@ CREATE TABLE tournaments (
     id SERIAL PRIMARY KEY,
     start_time TIMESTAMP NOT NULL,
     end_time TIMESTAMP,
-    status VARCHAR(20) NOT NULL DEFAULT 'active' -- 'active', 'ended'
+    status VARCHAR(20) NOT NULL DEFAULT 'active', -- 'active', 'ended'
+    winner VARCHAR(50)
 );
 
 CREATE TABLE history (
