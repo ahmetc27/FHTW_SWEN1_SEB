@@ -21,7 +21,7 @@ public class HistoryService : IHistoryService
         this.historyRepository = historyRepository;
         this.tournamentRepository = tournamentRepository;
     }
-    public History GetUserHistoryData(string token)
+    public List<History> GetUserHistoryData(string token)
     {
         if(!sessionRepository.ExistToken(token))
             throw new UnauthorizedException(ErrorMessages.TokenNotFound);
@@ -29,19 +29,20 @@ public class HistoryService : IHistoryService
         int userId = userRepository.GetIdByToken(token)
             ?? throw new BadRequestException(ErrorMessages.UserIdNotFound);
 
-        History? history = historyRepository.GetHistoryByUserId(userId);
+        List <History>? historyEntries = historyRepository.GetHistoryByUserId(userId);
         
-        if(history == null)
+        if(historyEntries == null)
         {
-            Logger.Warn($"No history found for user {userId}, returning empty history.");
-            history = new History
+            Logger.Warn($"No history found for user {userId}, initializing empty history.");
+            historyEntries = new List<History>();
+            History history = new History
             {
                 Count = 0,
                 Duration = 0
-            };        
-        }
-        
-        return history;
+            };
+            historyEntries.Add(history);
+        }        
+        return historyEntries;
     }
 
     public History LogPushups(string token, HistoryRequest historyRequest)

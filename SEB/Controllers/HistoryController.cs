@@ -15,16 +15,19 @@ public static class HistoryController
         string token = RequestHelper.GetAuthToken(request)
             ?? throw new UnauthorizedException(ErrorMessages.InvalidToken);
 
-        History history = historyService.GetUserHistoryData(token);
+        List<History> history = historyService.GetUserHistoryData(token);
 
         var responseBody = new
         {
             message = "History retrieved successfully",
-            count = history.Count,
-            duration = history.Duration
+            history = history.Select(h => new {
+                // Name: "Pushups" will not be shown to client
+                h.Count,
+                h.Duration
+            })
         };
         
-        Logger.Success($"History retrieved successfully: {JsonSerializer.Serialize(responseBody)}");
+        Logger.Success(JsonSerializer.Serialize(responseBody));
         Response.SendOk(writer, JsonSerializer.Serialize(responseBody));
     }
 

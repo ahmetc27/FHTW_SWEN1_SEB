@@ -24,9 +24,10 @@ public static class TournamentController
         
         var response = new
         {
-            message = message,
+            message,
             tournament
         };
+        
         Logger.Success(JsonSerializer.Serialize(response));
         Response.SendOk(writer, JsonSerializer.Serialize(response));
     }

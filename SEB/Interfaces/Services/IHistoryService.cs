@@ -5,6 +5,6 @@ namespace SEB.Interfaces;
 
 public interface IHistoryService
 {
-    public History GetUserHistoryData(string token);
+    public List<History> GetUserHistoryData(string token);
     public History LogPushups(string token, HistoryRequest historyRequest);
 }

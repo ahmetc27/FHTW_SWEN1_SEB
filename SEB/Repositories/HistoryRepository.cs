@@ -8,7 +8,7 @@ namespace SEB.Repositories;
 
 public class HistoryRepository : BaseRepository, IHistoryRepository
 {
-    public History? GetHistoryByUserId(int userid)
+    public List<History>? GetHistoryByUserId(int userid)
     {
         using IDbConnection connection = new NpgsqlConnection(connectionString);
         connection.Open();
@@ -22,17 +22,19 @@ public class HistoryRepository : BaseRepository, IHistoryRepository
 
         IDataReader reader = command.ExecuteReader();
 
-        if(reader.Read())
+        List<History> historyEntries = new();
+
+        while(reader.Read())
         {
-            History history = new History()
+            History history = new History
             {
                 Count = reader.IsDBNull(0) ? 0 : reader.GetInt32(0),
                 Duration = reader.IsDBNull(1) ? 0 : reader.GetInt32(1)
             };
-            Logger.Info($"Count: {history.Count}, Duration: {history.Duration}");
-            return history;
+
+            historyEntries.Add(history);
         }
-        return null;
+        return historyEntries != null ? historyEntries : null;
     }
 
     public History Add(int userid, History history)
