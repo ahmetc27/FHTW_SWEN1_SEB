@@ -185,7 +185,7 @@ public class TournamentRepository : BaseRepository, ITournamentRepository
                 StartTime = reader.GetDateTime(1),
                 EndTime = reader.IsDBNull(2) ? null : reader.GetDateTime(2),
                 Status = reader.GetString(3),
-                Winner = reader.GetString(4)
+                Winner = reader.IsDBNull(4) ? null : reader.GetString(4)
             };
             tournaments.Add(tournament);
         }
