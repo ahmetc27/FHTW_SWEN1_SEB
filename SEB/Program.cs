@@ -1,7 +1,6 @@
 ﻿using SEB.Http;
 using SEB.Interfaces;
 using SEB.Repositories;
-using SEB.Service;
 using SEB.Services;
 
 IUserRepository userRepository = new UserRepository();
@@ -12,9 +11,9 @@ ITournamentRepository tournamentRepository = new TournamentRepository();
 
 IUserService userService = new UserService(userRepository);
 ISessionService sessionService = new SessionService(userRepository, sessionRepository);
-IStatsService statsService = new StatsService(userRepository, sessionRepository, statsRepository);
+IStatsService statsService = new StatsService(sessionRepository, statsRepository);
 IHistoryService historyService = new HistoryService(userRepository, sessionRepository, historyRepository, tournamentRepository);
-ITournamentService tournamentService = new TournamentService(userRepository, sessionRepository, historyRepository, tournamentRepository);
+ITournamentService tournamentService = new TournamentService(userRepository, sessionRepository, tournamentRepository);
 
 IServerService serverService = new ServerService();
 Router router = new(userService, sessionService, statsService, historyService, tournamentService);

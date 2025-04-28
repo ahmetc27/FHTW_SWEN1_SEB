@@ -1,4 +1,3 @@
-using System.Collections;
 using SEB.Exceptions;
 using SEB.Interfaces;
 using SEB.DTOs;
@@ -8,12 +7,10 @@ namespace SEB.Services;
 
 public class StatsService : IStatsService
 {
-    private readonly IUserRepository userRepository;
     private readonly ISessionRepository sessionRepository;
     private readonly IStatsRepository statsRepository;
-    public StatsService(IUserRepository userRepository, ISessionRepository sessionRepository, IStatsRepository statsRepository)
+    public StatsService(ISessionRepository sessionRepository, IStatsRepository statsRepository)
     {
-        this.userRepository = userRepository;
         this.sessionRepository = sessionRepository;        
         this.statsRepository = statsRepository;
     }

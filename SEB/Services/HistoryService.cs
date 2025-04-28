@@ -4,7 +4,7 @@ using SEB.Interfaces;
 using SEB.Models;
 using SEB.Utils;
 
-namespace SEB.Service;
+namespace SEB.Services;
 
 public class HistoryService : IHistoryService
 {
