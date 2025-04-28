@@ -15,7 +15,8 @@ public static class ErrorMessages
     public const string UsernameRequired = "Username must not be empty";
     public const string PasswordRequired = "Password must not be empty";
     public const string UserIdNotFound = "Could not find user ID for the provided token";
-    public const string PositiveNumbersRequired = "Count and duration must be positive numbers";
+    public const string InvalidCount = "Count must be positive number";
+    public const string InvalidDuration = "Duration must be between 1 and 120 seconds";
     
     // Authentication
     public const string TokenRequired = "Header token required";
@@ -35,4 +36,5 @@ public static class ErrorMessages
     public const string HistoryNotFound = "History is null";
     public const string StatsNotFound = "Could not retrieve user stats";
     public const string TournamentNotFound = "Tournament not found";
+    public const string NoParticipants = "No participants in tournament";
 }

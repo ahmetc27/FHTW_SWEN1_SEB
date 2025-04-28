@@ -52,7 +52,7 @@ public class TournamentService : ITournamentService
         var participants = tournamentRepository.GetParticipants(tournamentId);
         
         if(participants == null || participants.Count == 0)
-            throw new Exception("No participants in tournament");
+            throw new Exception(ErrorMessages.NoParticipants);
         
         int maxCount = participants.Max(p => p.TotalCount);
         var winners = participants.Where(p => p.TotalCount == maxCount).ToList();

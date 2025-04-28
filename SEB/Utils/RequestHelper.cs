@@ -10,7 +10,7 @@ public static class RequestHelper
         string? username = request.Path.Split("/").LastOrDefault();
         
         if(string.IsNullOrWhiteSpace(username))
-            throw new BadRequestException("Username invalid in request line");
+            throw new BadRequestException(ErrorMessages.InvalidUsername);
         
         return username;
     }
@@ -18,13 +18,13 @@ public static class RequestHelper
     public static string GetAuthToken(Request request)
     {
         if(!request.Headers.ContainsKey("Authorization"))
-            throw new UnauthorizedException("Header token required");
+            throw new UnauthorizedException(ErrorMessages.TokenRequired);
 
         string? header = request.Headers["Authorization"];
         string? token = header?.Split(" ").LastOrDefault();
 
         if(string.IsNullOrWhiteSpace(token))
-            throw new UnauthorizedException("Invalid token");
+            throw new UnauthorizedException(ErrorMessages.InvalidToken);
 
         return token;
     }

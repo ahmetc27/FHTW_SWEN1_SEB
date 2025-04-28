@@ -47,8 +47,11 @@ public class HistoryService : IHistoryService
 
     public History LogPushups(string token, HistoryRequest historyRequest)
     {
-        if(historyRequest.Count <= 0 || historyRequest.DurationInSeconds <= 0)
-            throw new BadRequestException(ErrorMessages.PositiveNumbersRequired);
+        if(historyRequest.Count <= 0)
+            throw new BadRequestException(ErrorMessages.InvalidCount);
+        
+        if(historyRequest.DurationInSeconds <= 0 || historyRequest.DurationInSeconds > 120)
+            throw new BadRequestException(ErrorMessages.InvalidDuration);
 
         int userId = userRepository.GetIdByToken(token)
             ?? throw new BadRequestException(ErrorMessages.UserIdNotFound);
