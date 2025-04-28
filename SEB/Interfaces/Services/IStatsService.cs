@@ -1,4 +1,3 @@
-using System.Collections;
 using SEB.DTOs;
 
 namespace SEB.Interfaces;

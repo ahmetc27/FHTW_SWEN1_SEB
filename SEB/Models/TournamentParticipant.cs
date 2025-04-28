@@ -1,4 +1,4 @@
-namespace SEB.DTOs;
+namespace SEB.Models;
 
 public class TournamentParticipant
 {

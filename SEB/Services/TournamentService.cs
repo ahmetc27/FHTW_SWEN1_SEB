@@ -1,5 +1,6 @@
 using SEB.Exceptions;
 using SEB.Interfaces;
+using SEB.DTOs;
 using SEB.Models;
 using SEB.Utils;
 

@@ -1,4 +1,3 @@
-using SEB.DTOs;
 using SEB.Models;
 
 namespace SEB.Interfaces;

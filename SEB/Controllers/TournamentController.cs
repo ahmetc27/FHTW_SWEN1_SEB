@@ -2,7 +2,7 @@ using System.Text.Json;
 using SEB.Exceptions;
 using SEB.Http;
 using SEB.Interfaces;
-using SEB.Models;
+using SEB.DTOs;
 using SEB.Utils;
 
 namespace SEB.Controller;

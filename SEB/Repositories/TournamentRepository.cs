@@ -1,8 +1,7 @@
 using System.Data;
 using Npgsql;
-using SEB.DTOs;
-using SEB.Interfaces;
 using SEB.Models;
+using SEB.Interfaces;
 
 namespace SEB.Repositories;
 

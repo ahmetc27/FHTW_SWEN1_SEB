@@ -1,4 +1,6 @@
-namespace SEB.Models;
+using SEB.Models;
+
+namespace SEB.DTOs;
 
 public class TournamentResponse
 {
