@@ -40,8 +40,8 @@ public class Router
                     break;
 
                 default:
-                    Logger.Error("Endpoint not found");
-                    throw new BadRequestException("Endpoint not found");
+                    Logger.Error(ErrorMessages.EndpointNotFound);
+                    throw new BadRequestException(ErrorMessages.EndpointNotFound);
             }
         }
         catch(BadRequestException ex)

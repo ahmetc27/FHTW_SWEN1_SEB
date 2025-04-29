@@ -67,6 +67,6 @@ public class HistoryRepository : BaseRepository, IHistoryRepository
             };
         }
 
-        throw new Exception(ErrorMessages.DatabaseInsertHistoryError);
+        throw new Exception("Failed to insert history into the database");
     }
 }
