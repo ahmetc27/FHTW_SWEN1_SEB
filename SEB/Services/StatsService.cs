@@ -24,11 +24,14 @@ public class StatsService : IStatsService
         var userData = statsRepository.GetUserStatsByToken(token)
             ?? throw new BadRequestException(ErrorMessages.StatsNotFound);
 
+        var rank = GetRank(userData.elo);
+
         return new Stats
         {
             Id = userData.userId,
             Elo = userData.elo,
-            OverallPushups = userData.totalPushups
+            OverallPushups = userData.totalPushups,
+            Rank = rank
         };
     }
 
@@ -39,6 +42,25 @@ public class StatsService : IStatsService
         if(!sessionRepository.ExistToken(token))
             throw new UnauthorizedException(ErrorMessages.TokenNotFound);
 
-        return statsRepository.GetAllStats();
+        var stats = statsRepository.GetAllStats();
+
+        foreach(var stat in stats)
+            stat.Rank = GetRank(stat.Elo);
+
+        return stats;
+    }
+
+    private string GetRank(int elo)
+    {
+        if(elo <= 90)
+            return "Bronze";
+
+        if(elo <= 100)
+            return "Silver";
+
+        if(elo <= 110)
+            return "Gold";
+
+        return "Diamond";
     }
 }

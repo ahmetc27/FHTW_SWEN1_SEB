@@ -73,4 +73,37 @@ public class StatsTests
         mockSessionRepo.Verify(repo => repo.ExistToken(token), Times.Once);
         mockStatsRepo.Verify(repo => repo.GetUserStatsByToken(It.IsAny<string>()), Times.Never);
     }
+
+    [Test]
+    public void GetStats_WhenEloAbove110_ReturnsRankDiamond()
+    {
+        // Arrange
+        var expectedStats = new Stats()
+        {
+            Id = 1,
+            Elo = 120,
+            OverallPushups = 500,
+            Rank = "Diamond"
+        };
+
+        var token = "test-sebToken";
+
+        var mockSessionRepo = new Mock<ISessionRepository>();
+        var mockStatsRepo = new Mock<IStatsRepository>();
+
+        mockSessionRepo.Setup(repo => repo.ExistToken(token))
+            .Returns(true);    
+
+        mockStatsRepo.Setup(repo => repo.GetUserStatsByToken(token))
+            .Returns((1, 120, 500));
+
+        var statsService = new StatsService(mockSessionRepo.Object, mockStatsRepo.Object);
+
+        // Act
+        var result = statsService.GetStatistics(token);
+
+        // Assert
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result.Rank, Is.EqualTo("Diamond"));
+    }
 }
