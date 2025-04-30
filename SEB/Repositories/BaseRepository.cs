@@ -3,7 +3,7 @@ using System.Data;
 namespace SEB.Repositories;
 public class BaseRepository
 {
-    protected string connectionString = "Host=localhost;Username=postgres;Password=postgres;Database=postgres";
+    protected readonly string connectionString = "Host=localhost;Username=postgres;Password=postgres;Database=postgres";
 
     protected void AddParameterWithValue(IDbCommand command, string parameterName, DbType type,object value)
     {

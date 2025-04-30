@@ -53,6 +53,25 @@ public class UserTests
     }
 
     [Test]
+    public void Register_UsernameAlreadyExists_ThrowsConflictException()
+    {
+        var creds = new UserCredentials
+        {
+            Username = "existing",
+            Password = "123"
+        };
+
+        var mockRepo = new Mock<IUserRepository>();
+
+        mockRepo.Setup(repo => repo.ExistUsername("existing"))
+            .Returns(true);
+
+        var service = new UserService(mockRepo.Object);
+
+        Assert.Throws<ConflictException>(() => service.RegisterUser(creds));    
+    }
+
+    [Test]
     public void UpdateUserProfile_WithInvalidToken_ThrowsUnauthorizedException()
     {
         // Arrange
